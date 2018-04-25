@@ -36,3 +36,12 @@ class LoginForm(Form):
 		validators.length(min= 4, max=25, message= 'ingrese un username valido!.')
 		])
 	password = PasswordField('Password', [validators.Required(message='El password es Requerido!.')])
+
+
+class Factura(Form):
+    placas = StringField('Placas', [validators.Required(message = 'El campo es Requerido'),
+        validator.length(min=8, max = 8, message='Ingrese una placa valida')])
+    observaciones = StringField('Observaciones', [validators.Required('El campo es Requerido'),
+        validators.length(min=5, max=150, message='Ingrese un comentarios valido')])
+   
+        

@@ -175,14 +175,25 @@ def get_file(filename):
 	uuid = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
 	if (uuid==None):
 		flash('El registro no existe')
-		db.session.add(compras)
-		
-		db.session.commit()
-		flash('Registro agregado')
+		factura = Factura(request.form)
+		if request.method == 'POST' and Factura.validate() :
+			compras=Compras(
+				UUiD = atributos['UUiD'],
+				rfc = atributos['rfc'],
+				nombre = atributos['nombre'],
+				subtotal = atributos['subTotal'],
+				iva = atributos['IVA'],
+				total = atributos['total'],
+				fecha = atributos['fecha']
+				)
+			db.session.add(compras)
+
+			db.session.commit()
+			flash('Registro agregado')
 	else:
 		flash('El registro Existe en la base de datos')
 	lista1.append(atributos)
-	return render_template("ListaXML.HTML", lista=lista1, lista2=sample)#send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura)#send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 #############################################
 
