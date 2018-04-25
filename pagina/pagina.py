@@ -135,7 +135,7 @@ def get_file(filename):
 	compAtrib = dict(comprobante.attributes.items())
 	atributos = dict()
 	articulos = dict()
-	atributos['fecha'] = compAtrib['Fecha'][0:10]
+	atributos['fecha'] = compAtrib['Fecha']#[0:10]
 	atributos['total'] = compAtrib['Total']#.rjust(10, '0')
 	atributos['subTotal'] = compAtrib['SubTotal']
 	for nodo in comprobante.getElementsByTagName("cfdi:Impuestos"):
@@ -175,16 +175,8 @@ def get_file(filename):
 	uuid = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
 	if (uuid==None):
 		flash('El registro no existe')
-		compras = Compras(
-			atributos['UUiD'],
-			atributos['rfc'],
-			atributos['nombre'],
-			atributos['subTotal'],
-			atributos['IVA'],
-			atributos['total'],
-			atributos['fecha']
-			)
 		db.session.add(compras)
+		
 		db.session.commit()
 		flash('Registro agregado')
 	else:
