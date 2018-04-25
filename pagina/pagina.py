@@ -206,6 +206,8 @@ def get_file(filename):
 			db.session.add(arti)
 			db.session.commit()
 		flash('Registro agregado y tiene el Folio: {}'.format(id_compra.id))
+	else:
+		return render_template("leer.html")
 
 	lista1.append(atributos)
 	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura)#send_from_directory(app.config["UPLOAD_FOLDER"], filename)
