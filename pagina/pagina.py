@@ -191,11 +191,10 @@ def get_file(filename):
 			)
 
 
-	if request.method == 'POST' and factura.validate():
+	if (request.method == 'POST') and (factura.validate()) and (uuid!= None):
 		db.session.add(compras)
 		db.session.commit()
 		id_compra = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
-		print (id_compra.id)
 		for dc in range(Cant_Diccio):
 			arti = Articulos(
 				compras_id = id_compra.id,
@@ -206,7 +205,7 @@ def get_file(filename):
 				)
 			db.session.add(arti)
 			db.session.commit()
-		flash('Registro agregado')
+		flash('Registro agregado y tiene el Folio: {}'.format(id_compra.id))
 
 	lista1.append(atributos)
 	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura)#send_from_directory(app.config["UPLOAD_FOLDER"], filename)

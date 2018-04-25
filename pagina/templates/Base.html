@@ -12,7 +12,8 @@
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" >
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <!-- Custom styles for this template -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/logo-nav.css') }}" >
 
@@ -39,9 +40,14 @@
             <li class="nav-item">
               <a class="nav-link" href="/abount">About</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/servicios">Services</a>
-            </li>
+            <li class="dropdown">
+          <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Factura <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="/servicios">Captura</a></li>
+            <li><a href="#">Folio</a></li>
+            <!--<li><a href="#">P&aacute;gina 1-3</a></li>-->
+          </ul>
+        </li>
             <li class="nav-item">
               <a class="nav-link" href="/contanto">Contact</a>
             </li>
