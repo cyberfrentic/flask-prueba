@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import render_template
 from flask import request
-from forms import Create_Form, LoginForm
+from forms import Create_Form, LoginForm, Factura
 from flask_wtf import CsrfProtect
 from flask import redirect, url_for
 from flask import session
@@ -18,7 +18,7 @@ from werkzeug.utils import secure_filename
 from xml.dom import minidom
 import collections as co
 import os, sys
-from models import Compras
+from models import Compras, Articulos
 
 ALLOWED_EXTENSIONS = set(["xml"])
 
@@ -124,7 +124,7 @@ def upload_file():
 
     return render_template("leer.html")
 
-@app.route("/uploads/<filename>")
+@app.route("/uploads/<filename>", methods=['GET', 'POST'])
 def get_file(filename):
 	lista1=[]
 	lista2=[]
@@ -175,23 +175,39 @@ def get_file(filename):
 	uuid = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
 	if (uuid==None):
 		flash('El registro no existe')
-		factura = Factura(request.form)
-		if request.method == 'POST' and Factura.validate() :
-			compras=Compras(
-				UUiD = atributos['UUiD'],
-				rfc = atributos['rfc'],
-				nombre = atributos['nombre'],
-				subtotal = atributos['subTotal'],
-				iva = atributos['IVA'],
-				total = atributos['total'],
-				fecha = atributos['fecha']
-				)
-			db.session.add(compras)
-
-			db.session.commit()
-			flash('Registro agregado')
 	else:
 		flash('El registro Existe en la base de datos')
+	factura = Factura(request.form)
+	compras=Compras(
+			UUiD = atributos['UUiD'],
+			rfc = atributos['rfc'],
+			nombre = atributos['nombre'],
+			subtotal = atributos['subTotal'],
+			iva = atributos['IVA'],
+			total = atributos['total'],
+			fecha = atributos['fecha'],
+			placas = factura.placas.data,
+			observaciones = factura.observaciones.data
+			)
+
+
+	if request.method == 'POST' and factura.validate():
+		db.session.add(compras)
+		db.session.commit()
+		id_compra = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
+		print (id_compra.id)
+		for dc in range(Cant_Diccio):
+			arti = Articulos(
+				compras_id = id_compra.id,
+				cantidad = articulos['cantidad'+str(dc+1)],
+				descripcion = articulos['descripcion'+str(dc+1)],
+				p_u = articulos['valorUnitario'+str(dc+1)],
+				importe = articulos['importe'+str(dc+1)]
+				)
+			db.session.add(arti)
+			db.session.commit()
+		flash('Registro agregado')
+
 	lista1.append(atributos)
 	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura)#send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 

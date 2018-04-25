@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import relationship, backref
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
 import datetime
@@ -28,7 +29,7 @@ class Compras(db.Model):
 	__tablename__='compras'
 	id = db.Column(db.Integer, primary_key=True)
 	UUiD = db.Column(db.String(36), unique=True)
-	rfc = db.Column(db.String(13))
+	rfc = db.Column(db.String(13), index=True)
 	nombre = db.Column(db.String(150))
 	subtotal = db.Column(db.Float)
 	iva = db.Column(db.Float)
@@ -43,6 +44,7 @@ class Articulos(db.Model):
 	__tablename__ = 'articulos'
 	id = db.Column(db.Integer, primary_key=True)
 	compras_id = db.Column(db.Integer, db.ForeignKey("compras.id"), nullable=False)
+	compras = relationship(Compras, backref = backref('comprass', uselist=True))
 	cantidad = db.Column(db.Float)
 	descripcion = db.Column(db.String(150))
 	p_u = db.Column(db.Float)
