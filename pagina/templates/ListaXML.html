@@ -1,0 +1,84 @@
+{% extends 'Base.html' %}
+{% block content %}
+    <h4 class="mt-5"></h4>
+    <div class="table-responsive">
+    <table class="table table-hover">
+    	<caption>Datos de Factura</caption>
+    	<tbody>
+    	<tr>
+    		<td class="success"><strong>Fecha</strong></td>
+    		<th class="success"><strong>Total</strong></th>
+    		<th class="success"><strong>Subtotal</strong></th>
+    		<th class="success"><strong>I. V. A.</strong></th>
+    		<th class="success"><strong>R. F. C.</strong></th>
+    		<th class="success"><strong>Nombre</strong></th>
+    		<th class="success"><strong>UUID</strong></th>
+    	</tr>
+    	{% for item in lista %}
+    	
+    	<tr>
+    		<td class="info">
+    			{{ item['fecha'] }}
+    		</td>
+    		<td class="info">
+    			{{ item['total'] }}
+    		</td>
+    		<td class="info">
+    			{{ item['subTotal'] }}
+    		</td>
+    		<td class="info">
+    			{{ item['IVA'] }}
+    		</td>
+    		<td class="info">
+    			{{ item['rfc'] }}
+    		</td>
+    		<td class="info">
+    			{{ item['nombre'] }}
+    		</td>
+    		<td class="info">
+    			{{ item['UUiD'] }}
+    		</td>
+    	</tr>
+    	
+    {% endfor %}
+    </tbody>
+    </table>
+    </div>
+   
+    
+    <div class="table-responsive">
+    	<table class="table table-hover">
+    		<caption>Lista articulos de la factura</caption>
+    		<tbody>
+    			<tr>
+    				<td class="success"><strong>Cantidad</strong></td>
+    				<th class="success"><strong>Descripcion</strong></th>
+    				<th class="success"><strong>valor unitario</strong></th>
+    				<th class="success"><strong>importe</strong></th>
+    			</tr>
+    				{% for item in lista2 %}
+    				<tr>
+    					
+    						<td class="info">
+    							{{ item['cantidad'] }}
+    						</td>
+    						<td class="info">
+    							{{ item['descripcion'] }}
+    						</td>
+    						<td class="info">
+    							{{ item['valor'] }}
+    						</td>
+    						<td class="info">
+    							{{ item['importe'] }}
+    						</td>
+    						
+    					
+    				</tr>
+    				{% endfor %}
+
+    		</tbody>
+    		
+    	</table>
+    </div>
+    
+{% endblock %}

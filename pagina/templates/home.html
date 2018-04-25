@@ -1,0 +1,52 @@
+﻿{% extends 'Base.html' %}
+
+{% block login %}
+
+{% endblock %}
+
+{% block content %}
+    <h1 class="mt-5">Inicio</h1>
+    <p>En esta página podrás encontrar el formulario correspondiente para la captura de las facturas
+        de los distintos proveedores, con los que cuentas, en la Comisión de Agua Potable y Alcantarillado
+        del estado de Quintana Roo.
+    </p>
+
+
+    <h4 class="mt-4">Contenido</h4>
+    
+    
+    <!-- imagenes -->
+    
+    <div class="row">
+  <div class="col-md-4">
+    <div class="thumbnail">
+      <a href="static/img/lights.jpg">
+        <img src="{{ url_for('static', filename='img/lights.jpg') }}" alt="Lights" style="width:100%">
+        <div class="caption">
+          <p>Lorem ipsum...</p>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="thumbnail">
+      <a href="static/img/nature.jpg">
+        <img src="{{ url_for('static', filename='img/nature.jpg') }}" alt="Nature" style="width:100%">
+        <div class="caption">
+          <p>Lorem ipsum...</p>
+        </div>
+      </a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="thumbnail">
+      <a href="static/img/fjords.jpg">
+        <img src="{{ url_for('static', filename='img/fjords.jpg') }}" alt="Fjords" style="width:100%">
+        <div class="caption">
+          <p>Lorem ipsum...</p>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

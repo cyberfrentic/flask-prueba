@@ -1,0 +1,17 @@
+
+{% extends 'Base.html' %}
+
+{% block login %}
+    {% from "_macro.html" import render_field %}
+    <h1>Upload File</h1>
+    <form method="POST" enctype="multipart/form-data">
+    	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    {% block content %}
+        {% endblock %}
+        
+    </form>
+    <br>
+    <br>
+{% endblock %}
