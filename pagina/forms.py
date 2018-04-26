@@ -11,11 +11,11 @@ def length_honeypot(form, field):
 		raise validators.ValidationError('El Campo debe estar vacio.')
 
 class Create_Form(Form):
-    username = StringField('Username',
+    username = StringField('Usuario',
     	[validators.Required(message = 'El user es requerido!.'),
     	validators.length(min=4, max=50, message='ingrese un username valido!.')
     	])
-    password = PasswordField('Password', [validators.Required(message='El password es Indispensable!.')])
+    password = PasswordField('Contraseña', [validators.Required(message='El password es Indispensable!.')])
     email = EmailField('Correo electronico',
         [validators.Required(message = 'El Email es requerido!.'),
         validators.Email(message='Ingrese un email valido!.'),
@@ -31,11 +31,11 @@ class Create_Form(Form):
 
 
 class LoginForm(Form):
-	username = StringField('username',
+	username = StringField('Usuario',
 		[validators.Required(message = 'El userename es Requerido!.'),
 		validators.length(min= 4, max=25, message= 'ingrese un username valido!.')
 		])
-	password = PasswordField('Password', [validators.Required(message='El password es Requerido!.')])
+	password = PasswordField('Contraseña', [validators.Required(message='El password es Requerido!.')])
 
 
 class Factura(Form):

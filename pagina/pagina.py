@@ -37,7 +37,7 @@ crsf = CsrfProtect()
 
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['home','abount','upload_file','contacto','get_file','create']:
+	if 'username' not in session and request.endpoint in ['home','constancias','upload_file','contacto','get_file','create']:
 		return redirect(url_for('login'))
 	elif 'username' in session and request.endpoint in ['login']:
 		return redirect(url_for('home'))
@@ -86,9 +86,9 @@ def home():
 	return render_template("home.html")		
 
 
-@app.route('/abount')
-def abount():
-	return render_template("abount.html")
+@app.route('/constancias')
+def constancias():
+	return render_template("constancias.html")
 
 
 @app.route('/contanto')
@@ -175,8 +175,11 @@ def get_file(filename):
 	uuid = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
 	if (uuid==None):
 		flash('El registro no existe')
+		
 	else:
 		flash('El registro Existe en la base de datos')
+		return render_template("leer.html")
+		
 	factura = Factura(request.form)
 	compras=Compras(
 			UUiD = atributos['UUiD'],
@@ -191,7 +194,7 @@ def get_file(filename):
 			)
 
 
-	if (request.method == 'POST') and (factura.validate()) and (uuid!= None):
+	if (request.method == 'POST') and (factura.validate()):
 		db.session.add(compras)
 		db.session.commit()
 		id_compra = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
@@ -206,8 +209,7 @@ def get_file(filename):
 			db.session.add(arti)
 			db.session.commit()
 		flash('Registro agregado y tiene el Folio: {}'.format(id_compra.id))
-	else:
-		return render_template("leer.html")
+		
 
 	lista1.append(atributos)
 	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura)#send_from_directory(app.config["UPLOAD_FOLDER"], filename)
