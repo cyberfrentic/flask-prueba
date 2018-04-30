@@ -8,7 +8,7 @@ from flask import session
 from flask import flash
 from config import DevelopmentConfig
 from models import db
-from models import User
+from models import User, Compras
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -104,6 +104,18 @@ def logout():
 @app.errorhandler(404)
 def page_not_found(e):
 	return render_template('404.html'), 404
+
+@app.route('/folio',  methods=["GET", "POST"])
+def folio():
+	if request.method == 'POST':
+		folio = request.form['folio']
+		query1=Compras.query.filter_by(id=folio).first()
+		if query1 != None:
+			lista=(query1.fecha, str(query1.total), str(query1.subtotal), str(query1.iva), query1.rfc, query1.nombre, query1.UUiD)
+			return render_template('folio.html', lista=lista)
+		else:
+			flash("El Folio no existe")	
+	return render_template('folio.html')
 
 #############################################
 
