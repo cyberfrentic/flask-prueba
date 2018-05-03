@@ -38,7 +38,7 @@ crsf = CsrfProtect()
 
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['home','constancias','upload_file','contacto','get_file','create', 'folio']:
+	if 'username' not in session and request.endpoint in ['constancias','upload_file','contacto','get_file','create', 'folio']:
 		return redirect(url_for('login'))
 	elif 'username' in session and request.endpoint in ['login']:
 		return redirect(url_for('home'))
@@ -48,7 +48,7 @@ def before_request():
 			return redirect(url_for('home'))
 
 
-@app.route('/', methods=['GET', 'POST'])
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 	login_form = LoginForm(request.form)
@@ -82,6 +82,7 @@ def create():
     return render_template('index.html', form=create_form)
 
 
+@app.route('/')
 @app.route('/home')
 def home():
 	return render_template("home.html")		
@@ -119,13 +120,14 @@ def folio():
 			else:
 				flash("El Folio no existe")
 		elif 'form2' in request.form['btn1']:
-			print (folio)
 			numero_folio = request.form['numero']
 			compras = Compras.query.filter_by(id = folio).first()
-			compras.folio=numero_folio
-			db.session.commit()
-			flash('Número de Folio Agregado')
-			print (compras)
+			if compras.folio == 'Null':
+				compras.folio=numero_folio
+				db.session.commit()
+				flash('Número de Folio Agregado')
+			else:
+				flash('El Registro Cuenta con un número de Fondo {}'.format(compras.folio))
 	return render_template('folio.html')
 
 #############################################
