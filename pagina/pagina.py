@@ -20,6 +20,7 @@ import collections as co
 import os, sys
 from models import Compras, Articulos
 
+
 ALLOWED_EXTENSIONS = set(["xml"])
 
 def allowed_file(filename):
@@ -37,7 +38,7 @@ crsf = CsrfProtect()
 
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['home','constancias','upload_file','contacto','get_file','create']:
+	if 'username' not in session and request.endpoint in ['home','constancias','upload_file','contacto','get_file','create', 'folio']:
 		return redirect(url_for('login'))
 	elif 'username' in session and request.endpoint in ['login']:
 		return redirect(url_for('home'))
@@ -108,13 +109,23 @@ def page_not_found(e):
 @app.route('/folio',  methods=["GET", "POST"])
 def folio():
 	if request.method == 'POST':
-		folio = request.form['folio']
-		query1=Compras.query.filter_by(id=folio).first()
-		if query1 != None:
-			lista=(query1.fecha, str(query1.total), str(query1.subtotal), str(query1.iva), query1.rfc, query1.nombre, query1.UUiD)
-			return render_template('folio.html', lista=lista)
-		else:
-			flash("El Folio no existe")	
+		global folio
+		if 'form1' in request.form['btn1']:
+			folio = request.form['folio']
+			query1=Compras.query.filter_by(id=folio).first()
+			if query1 != None:
+				lista=(query1.fecha, str(query1.total), str(query1.subtotal), str(query1.iva), query1.rfc, query1.nombre, query1.UUiD)
+				return render_template('folio.html', lista=lista)
+			else:
+				flash("El Folio no existe")
+		elif 'form2' in request.form['btn1']:
+			print (folio)
+			numero_folio = request.form['numero']
+			compras = Compras.query.filter_by(id = folio).first()
+			compras.folio=numero_folio
+			db.session.commit()
+			flash('Número de Folio Agregado')
+			print (compras)
 	return render_template('folio.html')
 
 #############################################

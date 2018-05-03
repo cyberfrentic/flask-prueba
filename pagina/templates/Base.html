@@ -3,13 +3,14 @@
 <head>
 	 <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}" />
 
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-	<link rel="stylesheet"  href="{{ url_for('static', filename='css/bootstrap.min.css') }}" media="screen" >
-	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-responsive.css')}}" media="screen" >
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script> 
-	<script src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
-	<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet"  href="{{ url_for('static', filename='css/bootstrap.min.css') }}" media="screen" >
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-responsive.css')}}" media="screen" >
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script> 
+  <script src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+  
 	
 </head>
 <body >
@@ -41,7 +42,7 @@
                           <li><a href="#">One more separated link</a></li>
                         </ul>
                         <li><a href="/contanto">Contacto</a></li>
-						<li><a href="">hugo</a></li>
+						<li><a href="/create">Crear Usuario</a></li>
 						<li><a href="">hugo</a></li>
                       </li>
 						<!--Menu desplegable-->
@@ -55,6 +56,10 @@
 			</div>		
 		</div>
 	</div>
+  <br>
+  <br>
+  <br>
+  <br>
 	<div class="container">
       <div class="row-fluid">
         {% with messages = get_flashed_messages() %}
@@ -90,5 +95,6 @@
           
         </div>
     </footer>
+
 </body>
 </html>
