@@ -1,9 +1,5 @@
 {% extends 'Base.html' %}
-{% block saludo %}
-{% endblock %}
 
-{% block calendario %}
-{% endblock %}
 <br>
 <br>
 <br>
@@ -28,6 +24,12 @@
                 <div class="row form-control-feedback">
                     <div class="form-goup col-xs-12 floating-label-form-group controls">
                         {{ render_field(form.password, class='form-control') }}
+                        <p class="help-block text-danger"></p>
+                    </div>
+                </div>
+                <div class="row form-control-feedback">
+                    <div class="form-goup col-xs-12 floating-label-form-group controls">
+                        {{ render_field(form.confirm, class='form-control') }}
                         <p class="help-block text-danger"></p>
                     </div>
                 </div>

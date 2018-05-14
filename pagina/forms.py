@@ -15,7 +15,9 @@ class Create_Form(Form):
     	[validators.Required(message = 'El user es requerido!.'),
     	validators.length(min=4, max=50, message='ingrese un username valido!.')
     	])
-    password = PasswordField('Contraseña', [validators.Required(message='El password es Indispensable!.')])
+    password = PasswordField('Nueva Contraseña', [validators.Required(message='El password es Indispensable!.'),
+        validators.EqualTo('confirm', message='Las contraseñas deben ser iguales')])
+    confirm = PasswordField('Repita la Contraseña')
     email = EmailField('Correo electronico',
         [validators.Required(message = 'El Email es requerido!.'),
         validators.Email(message='Ingrese un email valido!.'),
@@ -32,10 +34,10 @@ class Create_Form(Form):
 
 class LoginForm(Form):
 	username = StringField('Usuario',
-		[validators.Required(message = 'El userename es Requerido!.'),
-		validators.length(min= 4, max=25, message= 'ingrese un username valido!.')
+		[validators.Required(message = 'El Nombre de Usuario es Requerido!.'),
+		validators.length(min= 4, max=25, message= 'ingrese un Nombre de Usuario valido!.')
 		])
-	password = PasswordField('Contraseña', [validators.Required(message='El password es Requerido!.')])
+	password = PasswordField('Contraseña', [validators.Required(message='La Contraseña es Requerida!.')])
 
 
 class Factura(Form):

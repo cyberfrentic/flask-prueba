@@ -9,27 +9,24 @@ from flask import flash
 from config import DevelopmentConfig
 from models import db
 from models import User, Compras
-
-import pymysql
-pymysql.install_as_MySQLdb()
-###########################################
 from flask import Flask, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 from xml.dom import minidom
 import collections as co
-import os, sys
+import os
 from models import Compras, Articulos
-
-
+from clases.fpdf2 import imprimir, imprimir2
+from clases.fpdf3 import tabla
+from flask import send_file
+from sqlalchemy import distinct
+###########################################
+import pymysql
+pymysql.install_as_MySQLdb()
+###########################################
 ALLOWED_EXTENSIONS = set(["xml"])
-
 def allowed_file(filename):
 	return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 ###########################################
-
-
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
@@ -39,14 +36,15 @@ crsf = CsrfProtect()
 @app.before_request
 def before_request():
 	if 'username' not in session and request.endpoint in ['constancias','upload_file','contacto','get_file','create', 'folio']:
-		return redirect(url_for('login'))
+		return redirect(url_for('home'))
 	elif 'username' in session and request.endpoint in ['login']:
 		return redirect(url_for('home'))
-	elif 'username' in session:
-		x = (session['username'])
-		if x != 'hugo' and request.endpoint in ['create']:
-			return redirect(url_for('home'))
-
+	elif 'username' in session and (session['username']) != 'hugo' and request.endpoint in ['create']:
+		return redirect(url_for('home'))
+	elif 'username' in session and (session['username']) == 'lorena' and request.endpoint in ['upload_file','get_file','create', 'folio']:
+		return redirect(url_for('home'))
+	elif 'username' in session and (session['username']) == 'pascual' and request.endpoint in ['constancias']:
+		return redirect(url_for('home'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -88,10 +86,64 @@ def home():
 	return render_template("home.html")		
 
 
-@app.route('/constancias')
+@app.route('/constancias',  methods=["GET", "POST"])
 def constancias():
+	if request.method == 'POST':
+		if request.form.get('validar')=='activo':
+			nombre = request.form['nombre']
+			direccion = request.form['direccion']
+			cedula = request.form['cedula']
+			x=imprimir2(nombre=nombre, direccion=direccion, cedula=cedula)
+			return (x)
+		else:
+			contrato = request.form['contrato']
+			nombre = request.form['nombre']
+			direccion = request.form['direccion']
+			cedula = request.form['cedula']
+			x=imprimir(contrato=contrato, nombre=nombre, direccion=direccion, cedula=cedula)
+			return (x)
 	return render_template("constancias.html")
 
+@app.route('/fondoContable',  methods=["GET", "POST"])
+def fondoContable():
+	lista=()
+	lista2=[]
+	query1 = db.session.query(Compras.nombre).distinct(Compras.nombre).order_by(Compras.nombre)
+	row = query1.all()
+	if query1 != None:
+		for item in row:
+			lista+=item
+	global query2
+	if request.method=="POST":
+		if 'form1' in request.form['btn1']:
+			if 'folio' in request.form['mismo']:
+				folio_text = request.form['folio_text']
+				query2 = Compras.query.filter_by(folio=folio_text).all()
+				return render_template("fondoContable.html",lista=lista, lista2=query2)
+			elif 'fecha' in request.form['mismo']:
+				fecha_ini = request.form['fecha_Inicial']
+				fecha_fin = request.form['fecha_Final']
+				query2 = db.session.query(Compras.fecha, Compras.total, Compras.subtotal, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin))
+				return render_template("fondoContable.html", lista=lista, lista2=query2)
+			elif 'prov' in request.form['mismo']:
+				proveedor = request.form['TextProv']
+				query2 = Compras.query.filter_by(nombre=proveedor).all()
+				return render_template("fondoContable.html", lista=lista, lista2=query2)
+		elif 'form2' in request.form['btn1']:
+			for item in query2:
+				j=[
+				str(item.fecha)[:10],
+				item.total,
+				item.subtotal,
+				item.iva,
+				item.rfc,
+				item.nombre,
+				item.UUiD
+				]
+				lista2.append(j)
+			x=tabla(lista2)
+			return (x)
+	return render_template("fondoContable.html", lista=lista)
 
 @app.route('/contanto')
 def contacto():
@@ -101,7 +153,7 @@ def contacto():
 def logout():
 	if 'username' in session:
 		session.pop('username')
-	return redirect(url_for('login'))
+	return redirect(url_for('home'))
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -130,7 +182,6 @@ def folio():
 				flash('El Registro Cuenta con un número de Fondo {}'.format(compras.folio))
 	return render_template('folio.html')
 
-#############################################
 
 @app.route("/servicios", methods=["GET", "POST"])
 def upload_file():
@@ -143,10 +194,8 @@ def upload_file():
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
             f.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-
             return redirect(url_for("get_file", filename=filename))
         return "File not allowed."
-
     return render_template("leer.html")
 
 @app.route("/uploads/<filename>", methods=['GET', 'POST'])
@@ -160,12 +209,11 @@ def get_file(filename):
 	compAtrib = dict(comprobante.attributes.items())
 	atributos = dict()
 	articulos = dict()
-	atributos['fecha'] = compAtrib['Fecha']#[0:10]
-	atributos['total'] = compAtrib['Total']#.rjust(10, '0')
+	atributos['fecha'] = compAtrib['Fecha']
+	atributos['total'] = compAtrib['Total']
 	atributos['subTotal'] = compAtrib['SubTotal']
 	for nodo in comprobante.getElementsByTagName("cfdi:Impuestos"):
             atributos['IVA'] = nodo.getAttribute('TotalImpuestosTrasladados')
-
             emisor = comprobante.getElementsByTagName('cfdi:Emisor')
             atributos['rfc'] = emisor[0].getAttribute('Rfc')
             atributos['nombre'] = emisor[0].getAttribute('Nombre')
@@ -184,9 +232,7 @@ def get_file(filename):
                     articulos['cantidad'+str(x)] = nodo2.getAttribute('Cantidad')
                     articulos['descripcion'+str(x)] = nodo2.getAttribute('Descripcion')
                     articulos['valorUnitario'+str(x)] = nodo2.getAttribute('ValorUnitario')
-                    articulos['importe'+str(x)] = nodo2.getAttribute('Importe')
-
-                    
+                    articulos['importe'+str(x)] = nodo2.getAttribute('Importe')                  
 	Cant_Diccio = int(len(articulos)/4)
 	sample = [co.defaultdict(int) for _ in range(Cant_Diccio)]
 	for dc in range(Cant_Diccio):
@@ -196,15 +242,12 @@ def get_file(filename):
 			'valor' : articulos['valorUnitario'+str(dc+1)],
 			'importe' : articulos['importe'+str(dc+1)]
 			}
-
 	uuid = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
 	if (uuid==None):
-		flash('El registro no existe')
-		
+		flash('El registro no existe')	
 	else:
 		flash('El registro Existe en la base de datos')
-		return render_template("leer.html")
-		
+		return render_template("leer.html")	
 	factura = Factura(request.form)
 	compras=Compras(
 			UUiD = atributos['UUiD'],
@@ -217,8 +260,6 @@ def get_file(filename):
 			placas = factura.placas.data,
 			observaciones = factura.observaciones.data
 			)
-
-
 	if (request.method == 'POST') and (factura.validate()):
 		db.session.add(compras)
 		db.session.commit()
@@ -234,12 +275,8 @@ def get_file(filename):
 			db.session.add(arti)
 			db.session.commit()
 		flash('Registro agregado y tiene el Folio: {}'.format(id_compra.id))
-		
-
 	lista1.append(atributos)
-	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura)#send_from_directory(app.config["UPLOAD_FOLDER"], filename)
-
-#############################################
+	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura)
 
 
 if __name__ == '__main__':
