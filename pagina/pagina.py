@@ -35,13 +35,13 @@ crsf = CsrfProtect()
 
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['constancias','upload_file','contacto','get_file','create', 'folio']:
+	if 'username' not in session and request.endpoint in ['constancias','upload_file','contacto','get_file','create', 'folio', 'fondoContable']:
 		return redirect(url_for('home'))
 	elif 'username' in session and request.endpoint in ['login']:
 		return redirect(url_for('home'))
 	elif 'username' in session and (session['username']) != 'hugo' and request.endpoint in ['create']:
 		return redirect(url_for('home'))
-	elif 'username' in session and (session['username']) == 'lorena' and request.endpoint in ['upload_file','get_file','create', 'folio']:
+	elif 'username' in session and (session['username']) == 'lorena' and request.endpoint in ['upload_file','get_file','create', 'folio','fondoContable']:
 		return redirect(url_for('home'))
 	elif 'username' in session and (session['username']) == 'pascual' and request.endpoint in ['constancias']:
 		return redirect(url_for('home'))
