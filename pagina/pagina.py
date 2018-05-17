@@ -115,34 +115,70 @@ def fondoContable():
 			lista+=item
 	global query2
 	if request.method=="POST":
-		if 'form1' in request.form['btn1']:
-			if 'folio' in request.form['mismo']:
-				folio_text = request.form['folio_text']
-				query2 = Compras.query.filter_by(folio=folio_text).all()
-				return render_template("fondoContable.html",lista=lista, lista2=query2)
-			elif 'fecha' in request.form['mismo']:
-				fecha_ini = request.form['fecha_Inicial']
-				fecha_fin = request.form['fecha_Final']
-				query2 = db.session.query(Compras.fecha, Compras.total, Compras.subtotal, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin))
-				return render_template("fondoContable.html", lista=lista, lista2=query2)
-			elif 'prov' in request.form['mismo']:
-				proveedor = request.form['TextProv']
-				query2 = Compras.query.filter_by(nombre=proveedor).all()
-				return render_template("fondoContable.html", lista=lista, lista2=query2)
-		elif 'form2' in request.form['btn1']:
-			for item in query2:
-				j=[
-				str(item.fecha)[:10],
-				item.total,
-				item.subtotal,
-				item.iva,
-				item.rfc,
-				item.nombre,
-				item.UUiD
-				]
-				lista2.append(j)
-			x=tabla(lista2)
-			return (x)
+		if request.form.getlist('mismo'):
+			valores = request.form.getlist('mismo')
+			if len(valores)!= 0:
+				cuantos = len(valores)
+				s=''
+				for i in range(len(valores)):
+					s+=valores[i]
+				if 'form1' in request.form['btn1']:
+					print(s)
+					if '1' == s:
+						folio_text = request.form['folio_text']
+						query2 = Compras.query.filter_by(folio=folio_text).all()
+						return render_template("fondoContable.html",lista=lista, lista2=query2)
+					elif '2' == s:
+						fecha_ini = request.form['fecha_Inicial']
+						fecha_fin = request.form['fecha_Final']
+						if str(fecha_ini)> str(fecha_fin):
+							flash('La consulta no se puede realizar, la fecha final debe ser mayo o igual a la fecha inicial')
+						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin))
+						return render_template("fondoContable.html", lista=lista, lista2=query2)
+					elif '3' == s:
+						proveedor = request.form['TextProv']
+						query2 = Compras.query.filter_by(nombre=proveedor).all()
+						return render_template("fondoContable.html", lista=lista, lista2=query2)
+					elif '12' == s:
+						folio_text = request.form['folio_text']
+						fecha_ini = request.form['fecha_Inicial']
+						fecha_fin = request.form['fecha_Final']
+						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin)).filter(Compras.folio==folio_text)
+						return render_template("fondoContable.html", lista=lista, lista2=query2)
+					elif '23' == s:
+						fecha_ini = request.form['fecha_Inicial']
+						fecha_fin = request.form['fecha_Final']
+						proveedor = request.form['TextProv']
+						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin)).filter(Compras.nombre==proveedor)
+						return render_template("fondoContable.html", lista=lista, lista2=query2)
+					elif '13' == s:
+						folio_text = request.form['folio_text']
+						proveedor = request.form['TextProv']
+						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.folio==folio_text).filter(Compras.nombre==proveedor)
+						return render_template("fondoContable.html", lista=lista, lista2=query2)
+					elif '123' == s:
+						folio_text = request.form['folio_text']
+						fecha_ini = request.form['fecha_Inicial']
+						fecha_fin = request.form['fecha_Final']
+						proveedor = request.form['TextProv']
+						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.folio==folio_text).filter(Compras.fecha.between(fecha_ini, fecha_fin)).filter(Compras.nombre==proveedor)
+						return render_template("fondoContable.html", lista=lista, lista2=query2)
+				elif 'form2' in request.form['btn1']:
+					for item in query2:
+						j=[
+						str(item.fecha)[:10],
+						item.total,
+						item.subtotal,
+						item.iva,
+						item.rfc,
+						item.nombre,
+						item.UUiD
+						]
+						lista2.append(j)
+					x=tabla(lista2)
+					return (x)
+		else:
+			flash('Debe elegir una opción')
 	return render_template("fondoContable.html", lista=lista)
 
 @app.route('/contanto')
@@ -154,6 +190,11 @@ def logout():
 	if 'username' in session:
 		session.pop('username')
 	return redirect(url_for('home'))
+
+@app.errorhandler(400)
+def regreso(e):
+	x=request.endpoint
+	return render_template(x +'.html'), 400
 
 @app.errorhandler(404)
 def page_not_found(e):

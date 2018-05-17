@@ -34,14 +34,14 @@
     				<legend>Consulta por Numero de fondo contable</legend>
     				<div class="control-group info">
     					<div class="controls">
-    						<label class="radio">
-    						<input type="radio" name="mismo" id="folio_value" value="folio" onclick="DesactivarFolio()"> Consulta por Fondo
+    						<label class="checkbox">
+    						<input type="checkbox" name="mismo" id="folio_value" value="1" onclick="DesactivarFolio()"> Consulta por Fondo
     						<input type="text" class="text" id="folio_text" name="folio_text" placeholder="Capture El Número de folio" onkeypress="return valida(event)" disabled>
     						</label>
     					</div>
     					<div class="controls">
-    						<label class="radio">
-    							<input type="radio" name="mismo" id="fecha"value="fecha" onclick="DesactivarFechas()"> Consulta por Fecha
+    						<label class="checkbox">
+    							<input type="checkbox" name="mismo" id="fecha"value="2" onclick="DesactivarFechas()"> Consulta por Fecha
     						</label>
     								<div>
     									Fecha Inicial
@@ -55,8 +55,8 @@
     						
     					</div>
 						<div class="controls">
-							<label class="radio">
-								<input type="radio" name="mismo" id="CheckProv" value="prov" onclick="DesactivarProveedor()">
+							<label class="checkbox">
+								<input type="checkbox" name="mismo" id="CheckProv" value="3" onclick="DesactivarProveedor()">
 								Seleccione un Proveedor
 								<select name="TextProv" id="TextProv" disabled>
 									{% if lista%}
@@ -99,20 +99,24 @@
     					<caption class="footer">Datos de Factura</caption>
     					<tbody>
     						<tr class="success">
+                                <<td><strong>Id</strong></td>
     							<td><strong>Fecha</strong></td>
     							<td><strong>Total</strong></th>
     							<td><strong>Subtotal</strong></th>
     							<td><strong>I. V. A.</strong></th>
+                                <td><strong>Núm. De Fondo</strong></td>
     							<td><strong>R. F. C.</strong></th>
     							<td><strong>Nombre</strong></th>
     							<td><strong>UUID</strong></th>
     						</tr>
     						{% for item in lista2 %}
-    							<tr class="info">								
+    							<tr class="info">
+                                    <<td>{{item.id}}</td>								
     								<td>{{ item.fecha }}</td>    	
     								<td>{{ item.total }}</td>
     								<td>{{ item.subtotal }}</td>
     								<td>{{ item.iva }}</td>
+                                    <td>{{ item.folio}}</td>
     								<td>{{ item.rfc }}</td>
     								<td>{{ item.nombre }}</td>
     								<td>{{ item.UUiD }}</td>    							

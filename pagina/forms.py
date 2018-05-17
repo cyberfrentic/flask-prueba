@@ -43,7 +43,7 @@ class LoginForm(Form):
 class Factura(Form):
     placas = StringField('Placas',
         [validators.Required(message = 'El campo es Requerido!.'),
-        validators.length(min=8, max = 8, message='Ingrese una placa valida!.')
+        validators.length(max = 8, message='El campo debe contener 8 caracteres como Maximo')
         ])
     observaciones = StringField('Observaciones', 
         [validators.Required('El campo es Requerido'),
