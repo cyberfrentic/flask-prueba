@@ -77,13 +77,18 @@ def create():
 
     	succes_message = 'Usuario registrado en la base de datos'
     	flash(succes_message)
-    return render_template('index.html', form=create_form)
+    nombre = (session['username']).upper()
+    return render_template('index.html', form=create_form, nombre=nombre)
 
 
 @app.route('/')
 @app.route('/home')
 def home():
-	return render_template("home.html")		
+	if 'username' in session:
+		nombre = (session['username']).upper()
+		return render_template("home.html",nombre=nombre)
+	else:
+		return render_template("home.html")
 
 
 @app.route('/constancias',  methods=["GET", "POST"])
@@ -102,10 +107,14 @@ def constancias():
 			cedula = request.form['cedula']
 			x=imprimir(contrato=contrato, nombre=nombre, direccion=direccion, cedula=cedula)
 			return (x)
-	return render_template("constancias.html")
+	nombre = (session['username']).upper()
+	return render_template("constancias.html", nombre=nombre)
+	
+	
 
 @app.route('/fondoContable',  methods=["GET", "POST"])
 def fondoContable():
+	nombre = (session['username']).upper()
 	lista=()
 	lista2=[]
 	query1 = db.session.query(Compras.nombre).distinct(Compras.nombre).order_by(Compras.nombre)
@@ -127,42 +136,42 @@ def fondoContable():
 					if '1' == s:
 						folio_text = request.form['folio_text']
 						query2 = Compras.query.filter_by(folio=folio_text).all()
-						return render_template("fondoContable.html",lista=lista, lista2=query2)
+						return render_template("fondoContable.html",lista=lista, lista2=query2, nombre=nombre)
 					elif '2' == s:
 						fecha_ini = request.form['fecha_Inicial']
 						fecha_fin = request.form['fecha_Final']
 						if str(fecha_ini)> str(fecha_fin):
 							flash('La consulta no se puede realizar, la fecha final debe ser mayo o igual a la fecha inicial')
 						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin))
-						return render_template("fondoContable.html", lista=lista, lista2=query2)
+						return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
 					elif '3' == s:
 						proveedor = request.form['TextProv']
 						query2 = Compras.query.filter_by(nombre=proveedor).all()
-						return render_template("fondoContable.html", lista=lista, lista2=query2)
+						return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
 					elif '12' == s:
 						folio_text = request.form['folio_text']
 						fecha_ini = request.form['fecha_Inicial']
 						fecha_fin = request.form['fecha_Final']
 						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin)).filter(Compras.folio==folio_text)
-						return render_template("fondoContable.html", lista=lista, lista2=query2)
+						return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
 					elif '23' == s:
 						fecha_ini = request.form['fecha_Inicial']
 						fecha_fin = request.form['fecha_Final']
 						proveedor = request.form['TextProv']
 						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin)).filter(Compras.nombre==proveedor)
-						return render_template("fondoContable.html", lista=lista, lista2=query2)
+						return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
 					elif '13' == s:
 						folio_text = request.form['folio_text']
 						proveedor = request.form['TextProv']
 						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.folio==folio_text).filter(Compras.nombre==proveedor)
-						return render_template("fondoContable.html", lista=lista, lista2=query2)
+						return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
 					elif '123' == s:
 						folio_text = request.form['folio_text']
 						fecha_ini = request.form['fecha_Inicial']
 						fecha_fin = request.form['fecha_Final']
 						proveedor = request.form['TextProv']
 						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.folio==folio_text).filter(Compras.fecha.between(fecha_ini, fecha_fin)).filter(Compras.nombre==proveedor)
-						return render_template("fondoContable.html", lista=lista, lista2=query2)
+						return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
 				elif 'form2' in request.form['btn1']:
 					for item in query2:
 						j=[
@@ -179,11 +188,12 @@ def fondoContable():
 					return (x)
 		else:
 			flash('Debe elegir una opción')
-	return render_template("fondoContable.html", lista=lista)
+	return render_template("fondoContable.html", lista=lista, nombre=nombre)
 
 @app.route('/contanto')
 def contacto():
-    return render_template("contacto.html")
+	nombre = (session['username']).upper()
+	return render_template("contacto.html", nombre=nombre)
 
 @app.route('/logout')
 def logout():
@@ -193,15 +203,22 @@ def logout():
 
 @app.errorhandler(400)
 def regreso(e):
+	nombre = (session['username']).upper()
 	x=request.endpoint
-	return render_template(x +'.html'), 400
+	return render_template(x +'.html', nombre=nombre), 400
 
 @app.errorhandler(404)
 def page_not_found(e):
-	return render_template('404.html'), 404
+	if 'username' in session:
+		nombre = (session['username']).upper()
+		return render_template('404.html', nombre=nombre), 404
+	else:
+		return render_template('404.html'), 404
+	
 
 @app.route('/folio',  methods=["GET", "POST"])
 def folio():
+	nombre = (session['username']).upper()
 	if request.method == 'POST':
 		global folio
 		if 'form1' in request.form['btn1']:
@@ -209,7 +226,7 @@ def folio():
 			query1=Compras.query.filter_by(id=folio).first()
 			if query1 != None:
 				lista=(query1.fecha, str(query1.total), str(query1.subtotal), str(query1.iva), query1.rfc, query1.nombre, query1.UUiD)
-				return render_template('folio.html', lista=lista)
+				return render_template('folio.html', lista=lista, nombre=nombre)
 			else:
 				flash("El Folio no existe")
 		elif 'form2' in request.form['btn1']:
@@ -221,7 +238,7 @@ def folio():
 				flash('Número de Folio Agregado')
 			else:
 				flash('El Registro Cuenta con un número de Fondo {}'.format(compras.folio))
-	return render_template('folio.html')
+	return render_template('folio.html',nombre=nombre)
 
 
 @app.route("/servicios", methods=["GET", "POST"])
@@ -237,7 +254,8 @@ def upload_file():
             f.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             return redirect(url_for("get_file", filename=filename))
         return "File not allowed."
-    return render_template("leer.html")
+    nombre = (session['username']).upper()
+    return render_template("leer.html", nombre=nombre)
 
 @app.route("/uploads/<filename>", methods=['GET', 'POST'])
 def get_file(filename):
@@ -317,7 +335,8 @@ def get_file(filename):
 			db.session.commit()
 		flash('Registro agregado y tiene el Folio: {}'.format(id_compra.id))
 	lista1.append(atributos)
-	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura)
+	nombre = (session['username']).upper()
+	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura, nombre=nombre)
 
 
 if __name__ == '__main__':

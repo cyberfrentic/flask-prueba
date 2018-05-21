@@ -46,10 +46,16 @@
 						<li><a href="/create">Crear Usuario</a></li>
 						<!--<li><a href="">hugo</a></li>-->
                       </li>
-						
+					
 					</ul>
 					<ul class="nav pull-right">
-						<li><a href="/login"><icon class="icon-user icon-white"></icon> Login</a></li>
+            {%block nombre%}  
+            {% if nombre %}
+						  <li><a href="#"><icon class="icon-user icon-white"></icon> {{nombre}}</a></li>
+            {% else %}
+              <li><a href="/login"><icon class="icon-user icon-white"></icon> Login</a></li> 
+            {% endif %}
+            {%endblock%}  
 						<li class="divider-vertical"></li>
 						<li><a href="/logout"><icon class="icon-off icon-white"></icon> Logout</a></li>
 					</ul>

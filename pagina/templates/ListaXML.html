@@ -1,12 +1,11 @@
 {% extends 'Base.html' %}
-{% block saludo %}
-{% endblock %}
-
-{% block calendario %}
-{% endblock %}
-
-{% block login %}
-{% endblock %}
+{%block nombre%}  
+    {% if nombre %}
+      <li><a href="#"><icon class="icon-user icon-white"></icon> {{nombre}}</a></li>
+    {% else %}
+        <li><a href="/login"><icon class="icon-user icon-white"></icon> Login</a></li> 
+    {% endif %}
+{%endblock%}
 {% block content %}
     <h4 class="mt-5"></h4>
     <div class="table-responsive">
