@@ -49,3 +49,10 @@ class Articulos(db.Model):
 	descripcion = db.Column(db.String(150))
 	p_u = db.Column(db.Float)
 	importe = db.Column(db.Float)
+
+class Padron(db.Model):
+	__tablename__='padron'
+	cuenta = db.Column(db.Integer, primary_key=True, unique=True, index=True)
+	nombre = db.Column(db.String(120))
+	direccion = db.Column(db.String(150))
+

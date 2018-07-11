@@ -11,7 +11,7 @@ class PDF(FPDF):
         #Ruta del la carpeta imagenes del servidor
         imagenes=os.path.abspath("static/img/")
         # Logo  con esta ruta se dirige al server y no a la maquina cliente
-        self.image(os.path.join(imagenes, "sintitulo.png"), 10, 8, 200)
+        self.image(os.path.join(imagenes, "sintitulo.png"), 10, 5, 250)
         # Arial bold 15
         self.set_font('Arial', 'B', 8)
         self.ln(15)
@@ -122,7 +122,7 @@ def letras():
     anio = str(datetime.today())[:4]
     return (dias[dia] + ' dias del mes de ' + meses[mes] + ' de ' + anios[anio]).upper()
 
-def tabla(datos):
+def tabla(datos, totales):
     # Instantiation of inherited class
     pdf = PDF('L', 'mm', 'Letter')
     pdf.alias_nb_pages()
@@ -157,7 +157,7 @@ def tabla(datos):
     for item in data:
         bandera+=1
         if bandera==1 or bandera==2 or bandera==3 or bandera==4:
-            pdf.cell(col_width-18, th, str(item), border=1)
+            pdf.cell(col_width-18, th, str(item),  border=1)
         elif bandera==5:
             pdf.cell(col_width-8, th, str(item), border=1)
         else:
@@ -181,6 +181,11 @@ def tabla(datos):
             else:
                 pdf.cell(col_width+35, th, str(datum), border=1)
         pdf.ln(th)
+    pdf.ln(2)
+    pdf.set_font('Times','B',14.0)
+    th = pdf.font_size   
+    pdf.cell(30, th, 'TOTAL: $ '+ str(totales), 'C', 1)
+    
 
     response = make_response(pdf.output(dest='S').encode('latin-1'))
     response.headers['Content-Type'] = 'application/pdf'

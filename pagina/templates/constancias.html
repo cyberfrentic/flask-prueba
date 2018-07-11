@@ -8,8 +8,7 @@
     {% endif %}
 {%endblock%}
 
-{% block login %}
-{% endblock %}
+
 {% block content %}
     <script>
     	// Convierte en mayusculas los datos de un input
@@ -19,6 +18,8 @@
     	// Desactivar un input
     	function DesactivarContrato() {
     		document.getElementById("contrato").disabled = document.getElementById("validacion").checked;
+            document.getElementById('btn-2').disabled = document.getElementById("validacion").checked;
+            
 		}
 		function valida(e){
     		tecla = (document.all) ? e.keyCode : e.which;
@@ -32,6 +33,7 @@
     	return patron.test(tecla_final);
 		}
 	</script>
+
     <div class="container">
     	<div class="row-fluid">
     		<div class="form">
@@ -44,38 +46,61 @@
     						<input type="checkbox" id="validacion" name="validar" onclick="DesactivarContrato()" value="activo">
     					</div>
     				</div>
+                    {% if name and direccion and contrato %}
     				<div class="control-group info">
     					<label class="control-label" for="contrato">Contrato</label>
     					<div class="controls">
-    						<input type="text" id="contrato" name="contrato" placeholder="Capture El Número de contrato" onkeypress="return valida(event)">
+    						<input type="text" id="contrato" name="contrato" placeholder="Capture El Número de contrato" onkeypress="return valida(event)" value={{contrato}}>
+                            <button type="submit" class="btn btn-info" id="btn-2" name="boton" value="search">Search</button>
     					</div>
     				</div>
     				<div class="control-group info">
     					<label for="nombre" class="control-label">Nombre</label>
     					<div class="controls">
-    						<input type="text" class="text" id="nombre" name="nombre" placeholder="Capture el Nombre del Usuario" onkeyup="mayus(this);" required>
+    						<input type="text" class="text" id="nombre" name="nombre" placeholder="Capture el Nombre del Usuario" onkeyup="mayus(this);" value="{{name}}"> 
     					</div>
     				</div>
     				<div class="control-group info">
     					<label for="direccion" class="control-label">Direccion</label>
     					<div class="controls">
-    						<input type="text" class="text" id="direccion" name="direccion" placeholder="Capture la dirección del usuari" onkeyup="mayus(this);" required>
+    						<input type="text" class="text" id="direccion" name="direccion" placeholder="Capture la dirección del usuari" onkeyup="mayus(this);" value="{{direccion}}">
     					</div>
     				</div>
+                    {% else %}
+                    <div class="control-group info">
+                        <label class="control-label" for="contrato">Contrato</label>
+                        <div class="controls">
+                            <input type="text" id="contrato" name="contrato" placeholder="Capture El Número de contrato" onkeypress="return valida(event)">
+                            <button type="submit" class="btn btn-info" id="btn-2" name="boton" value="search">Search</button>
+                        </div>
+                    </div>
+                    <div class="control-group info">
+                        <label for="nombre" class="control-label">Nombre</label>
+                        <div class="controls">
+                            <input type="text" class="text" id="nombre" name="nombre" placeholder="Capture el Nombre del Usuario" onkeyup="mayus(this);" >
+                        </div>
+                    </div>
+                    <div class="control-group info">
+                        <label for="direccion" class="control-label">Direccion</label>
+                        <div class="controls">
+                            <input type="text" class="text" id="direccion" name="direccion" placeholder="Capture la dirección del usuari" onkeyup="mayus(this);" >
+                        </div>
+                    </div>
+                    {% endif %}
     				<div class="control-group info">
     					<label for="cedulaCatastral" class="control-label">Cedula Catastral</label>
     					<div class="controls">
-    						<input type="text" class="text" id="cedulaCatastral" name="cedula" onkeypress="return valida(event)" placeholder="Capture La Cedula Catastral" required>
+    						<input type="text" class="text" id="cedulaCatastral" name="cedula" onkeypress="return valida(event)" placeholder="Capture La Cedula Catastral" >
     					</div>
     				</div>
     				
     				<div class="control-group">
     					<div class="controls">
     						<div class="btn-group">
-    							<button type="submit" class="btn btn-info" id="generar">Generar Constancia</button>
+    							<button type="submit" class="btn btn-info" id="generar" name="boton" value="generar">Generar Constancia</button>
     						</div>
     						<div class="btn-group">
-    							<button type="reset" class="btn btn-info">cancelar</button>
+    							<button type="reset" class="btn btn-info" name="boton" value="cancelar">cancelar</button>
     						</div>
     					</div>
     				</div>
