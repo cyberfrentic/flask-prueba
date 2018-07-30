@@ -56,3 +56,48 @@ class Padron(db.Model):
 	nombre = db.Column(db.String(120))
 	direccion = db.Column(db.String(150))
 
+class Combustible(db.Model):
+	__tablename__='combustible'
+	id = 			db.Column(db.Integer, primary_key=True)
+	factura = 		db.Column(db.Integer)
+	leyenda = 		db.Column(db.String(25))
+	placa = 		db.Column(db.String(20))
+	nutarjeta = 	db.Column(db.String(15))
+	centroCosto = 	db.Column(db.String(20))
+	fechaCarga = 	db.Column(db.DateTime)
+	nuFolio = 		db.Column(db.Integer)
+	nuFolio_id = 	db.Column(db.Integer, db.ForeignKey('ticket.id'))
+	Folio = 		db.relationship('Ticket')
+	esCarga = 		db.Column(db.String(10))
+	nombreEs = 		db.Column(db.String(15))
+	descripcion = 	db.Column(db.String(15))
+	litros = 		db.Column(db.Float)
+	precio = 		db.Column(db.Float)
+	importe = 		db.Column(db.Float)
+	odom = 			db.Column(db.Integer)
+	odoAnt = 		db.Column(db.Integer)
+	kmRec = 		db.Column(db.Float)
+	kmLts = 		db.Column(db.String(10))
+	pKm = 			db.Column(db.Float)
+	conductor = 	db.Column(db.String(10))
+
+	def __repr__(self):
+		return "<Combustible nuFolio='%s'>" % (self.nuFolio)
+
+class Ticket(db.Model):
+	__tablename='ticket'
+	id = db.Column(db.Integer, primary_key=True)
+	nuFolio = db.Column(db.Integer)
+	fecha = db.Column(db.DateTime)
+	litros = db.Column(db.Float)
+	combustible = db.Column(db.String(7))
+	precio = db.Column(db.Float)
+	subtotal = db.Column(db.Float)
+	iva = db.Column(db.Float)
+	total = db.Column(db.Float)
+	medio = db.Column(db.String(8))
+	placa = db.Column(db.String(9))
+	observaciones = db.Column(db.Text)
+
+	def __repr__(self):
+		return "<Ticket nuFolio='%s'>" % (self.nuFolio)

@@ -8,7 +8,7 @@ from flask import session
 from flask import flash
 from config import DevelopmentConfig
 from models import db
-from models import User, Compras, Padron
+from models import User, Compras, Padron, Combustible, Ticket
 from flask import Flask, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 from xml.dom import minidom
@@ -19,15 +19,21 @@ from clases.fpdf2 import imprimir, imprimir2
 from clases.fpdf3 import tabla
 from flask import send_file
 from sqlalchemy import distinct
+import xlrd
+import datetime
 ###########################################
 import pymysql
 pymysql.install_as_MySQLdb()
 ###########################################
-ALLOWED_EXTENSIONS = set(["xml"])
+ALLOWED_EXTENSIONS = set(["xml","xls"])
 def allowed_file(filename):
 	return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 ###########################################
-
+def exceldate(serial):
+    seconds = (serial - 25569) * 86400.0
+    d = datetime.datetime.utcfromtimestamp(seconds)
+    return d.strftime('%Y-%m-%d')
+###########################################
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 crsf = CsrfProtect()
@@ -35,13 +41,13 @@ crsf = CsrfProtect()
 
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['constancias','upload_file','contacto','get_file','create', 'folio', 'fondoContable']:
+	if 'username' not in session and request.endpoint in ['constancias','upload_file','contacto','get_file','create', 'folio', 'fondoContable', 'ticket']:
 		return redirect(url_for('home'))
 	elif 'username' in session and request.endpoint in ['login']:
 		return redirect(url_for('home'))
 	elif 'username' in session and (session['username']) != 'hugo' and request.endpoint in ['create']:
 		return redirect(url_for('home'))
-	elif 'username' in session and (session['username']) == 'lorena' and request.endpoint in ['upload_file','get_file','create', 'folio','fondoContable']:
+	elif 'username' in session and (session['username']) == 'lorena' and request.endpoint in ['upload_file','get_file','create', 'folio','fondoContable', 'ticket']:
 		return redirect(url_for('home'))
 	elif 'username' in session and (session['username']) == 'pascual' and request.endpoint in ['constancias']:
 		return redirect(url_for('home'))
@@ -99,12 +105,10 @@ def constancias():
 			contrato = request.form['contrato']
 			try:
 				query1 = Padron.query.filter_by(cuenta=contrato).first()
-				print (query1)
 				nombre = (session['username']).upper()
 				return render_template("constancias.html", nombre=nombre, name=query1.nombre, direccion= query1.direccion, contrato=contrato)
 			except AttributeError:
 				flash('El contrato no existe')
-			
 		elif 'generar' in request.form['boton']:
 			if request.form.get('validar')=='activo':
 				nombre = request.form['nombre']
@@ -234,6 +238,51 @@ def page_not_found(e):
 	else:
 		return render_template('404.html'), 404
 	
+@app.route('/ticket', methods=["GET", "POST"])
+def ticket():
+	if request.method == 'POST':
+		fecha = request.form["fecha"]
+		hora = request.form["appt-time"]
+		cant = request.form["cantidad"]
+		comb = request.form["optionsRadios"]
+		precio = request.form["precio"]
+		subtotal = request.form["subtotal"]
+		iva = request.form["iva"]
+		total = request.form["total"]
+		donde = request.form["placa"]
+		placa = request.form["tipo"]
+		obser = request.form["comentarios"]
+		if (len(request.form.getlist('validar'))) < 1:
+			tra = request.form["transaccion"]
+			query1 = Ticket.query.filter_by(transaccion=tra).first()
+			if query1 != None:
+				flash("El ticket ya fue capturado")
+				nombre = (session['username']).upper()
+				return render_template("ticket.html", nombre=nombre)
+		elif (len(request.form.getlist('validar'))) == 1:
+			tra = 0
+			flash('El ticket es un planchado y no cuenta con numero de folio')
+		ticket = Ticket(
+					nuFolio = tra,
+					fecha = str(fecha)+' '+ str(hora),
+					litros = cant,
+					combustible = comb,
+					precio = precio,
+					subtotal = subtotal,
+					iva = iva,
+					total = total,
+					medio = donde,
+					placa = placa,
+					observaciones = obser,
+					)
+		db.session.add(ticket)
+		db.session.commit()
+		flash('Ticket Fue Agregado correctamente con numero de folio: {}'.format(str(tra)))
+	if 'username' in session:
+		nombre = (session['username']).upper()
+		return render_template("ticket.html", nombre=nombre)
+	else:
+		return render_template("ticket.html")
 
 @app.route('/folio',  methods=["GET", "POST"])
 def folio():
@@ -270,18 +319,83 @@ def upload_file():
             return "No file selected."
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
-            f.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
-            return redirect(url_for("get_file", filename=filename))
+            nombre, extension = filename.split('.')
+            if extension=='xml':
+            	f.save(os.path.join(app.config["UPLOAD_FOLDER"]+'\\xml', filename))
+            	return redirect(url_for("get_fileXml", filename=filename))
+            elif extension=='xls':
+            	f.save(os.path.join(app.config["UPLOAD_FOLDER"]+'\\xls', filename))
+            	return redirect(url_for("get_fileXls", filename=filename))
         return "File not allowed."
     nombre = (session['username']).upper()
     return render_template("leer.html", nombre=nombre)
 
-@app.route("/uploads/<filename>", methods=['GET', 'POST'])
-def get_file(filename):
+@app.route("/uploads/xls/<filename>", methods=['GET', 'POST'])
+def get_fileXls(filename):
+	book = xlrd.open_workbook(app.config["UPLOAD_FOLDER"]+'\\xls\\'+filename)
+	sheet = book.sheet_by_index(0)
+	data = dict()
+	lista1=[]
+	lista2=[]
+	fact= sheet.cell(2,0).value
+	try:
+		uuid = Combustible.query.filter_by(factura=fact).first()
+		flash('El registro no existe')
+		for i in range(sheet.nrows-2):	
+			data={
+				'placa' : str(sheet.cell(i+2,2).value),
+				'nutarjeta' : sheet.cell(i+2,3).value,
+				'centroCosto' : sheet.cell(i+2,4).value,
+				'fechaCarga' : exceldate(sheet.cell(i+2,5).value) +' '+ str(sheet.cell(i+2,6).value),
+				'nuFolio' : sheet.cell(i+2,7).value,
+				'esCarga' : sheet.cell(i+2,8).value,
+				'nombreEs' : sheet.cell(i+2,9).value,
+				'descripcion' : sheet.cell(i+2,10).value,
+				'litros' : sheet.cell(i+2,11).value,
+				'precio' : sheet.cell(i+2,12).value,
+				'importe' : sheet.cell(i+2,14).value,
+				'odom' : sheet.cell(i+2,15).value,
+				'odoAnt' : sheet.cell(i+2,16).value,
+			}
+			lista1.append(data)
+			for i in range(sheet.nrows-2):
+				combustible=Combustible(
+					factura = sheet.cell(i+2,0).value,
+					leyenda = sheet.cell(i+2,1).value,
+					placa = str(sheet.cell(i+2,2).value),
+					nutarjeta = sheet.cell(i+2,3).value,
+					centroCosto = sheet.cell(i+2,4).value,
+					fechaCarga = exceldate(sheet.cell(i+2,5).value) +' '+ str(sheet.cell(i+2,6).value),
+					nuFolio = sheet.cell(i+2,7).value,
+					esCarga = sheet.cell(i+2,8).value,
+					nombreEs = sheet.cell(i+2,9).value,
+					descripcion = sheet.cell(i+2,10).value,
+					litros = sheet.cell(i+2,11).value,
+					precio = sheet.cell(i+2,12).value,
+					importe =sheet.cell(i+2,14).value,
+					odom = sheet.cell(i+2,15).value,
+					odoAnt = sheet.cell(i+2,16).value,
+					kmRec = sheet.cell(i+2,17).value,
+					kmLts = str(sheet.cell(i+2,18).value),
+					pKm = sheet.cell(i+2,19).value,
+					conductor = sheet.cell(i+2,20).value,
+				)
+			db.session.add(combustible)
+			db.session.commit()
+		flash('El registro fue agragado con exito, Factura No. {}'.format(str(int(fact))))
+	except ValueError:
+		flash('El registro existe en la base de datos, Factura No. {}'.format(str(int(fact))))
+		nombre = (session['username']).upper()
+		return render_template("leer.html", nombre=nombre)
+	nombre = (session['username']).upper()
+	return render_template("combustible.html", data=lista1, fact=(str(int(fact))), nombre=nombre)
+
+@app.route("/uploads/xml/<filename>", methods=['GET', 'POST'])
+def get_fileXml(filename):
 	lista1=[]
 	lista2=[]
 	articulo=[]
-	xmlDoc = minidom.parse(app.config["UPLOAD_FOLDER"]+'\\'+filename)
+	xmlDoc = minidom.parse(app.config["UPLOAD_FOLDER"]+'\\xml\\'+filename)
 	nodes = xmlDoc.childNodes
 	comprobante = nodes[0]
 	compAtrib = dict(comprobante.attributes.items())

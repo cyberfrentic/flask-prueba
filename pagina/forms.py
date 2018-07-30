@@ -49,7 +49,3 @@ class Factura(Form):
         [validators.Required('El campo es Requerido'),
         validators.length(min=5, max=150, message='Ingrese un comentarios valido')
         ])
-
-
-   
-        
