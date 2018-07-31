@@ -19,6 +19,7 @@ from clases.fpdf2 import imprimir, imprimir2
 from clases.fpdf3 import tabla
 from flask import send_file
 from sqlalchemy import distinct
+from sqlalchemy.sql import text
 import xlrd
 import datetime
 ###########################################
@@ -194,7 +195,7 @@ def fondoContable():
 					query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.folio==folio_text).filter(Compras.fecha.between(fecha_ini, fecha_fin)).filter(Compras.nombre==proveedor)
 					return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
 			else:
-				flash('Debe elegir una opción')
+				flash('Debe elegir una opcion')
 		elif 'form2' in request.form['btn1']:
 			totales=0
 			for item in query2:
@@ -212,6 +213,22 @@ def fondoContable():
 			x=tabla(lista2, totales)
 			return (x)
 	return render_template("fondoContable.html", lista=lista, nombre=nombre)
+
+@app.route('/ticketvsfactura',  methods=["GET", "POST"])
+def ticketvsfactura():
+	nombre = (session['username']).upper()
+	if request.method=='POST':
+		num = request.form['numero']
+		strq = "select t1.nuFolio, t1.placa,t1.litros, t1.importe from combustible t1 where t1.nufolio not in\
+		 (select t2.nuFolio from ticket t2 where t1.nuFolio = t2.nuFolio) and t1.factura = '%s' and t1.descripcion != 'COMISION'" % num
+		stmt = text(strq)
+		result = db.session.execute(stmt)
+		strq = "select count(*) from combustible t1 where t1.nufolio not in\
+		 (select t2.nuFolio from ticket t2 where t1.nuFolio = t2.nuFolio) and t1.factura = '%s' and t1.descripcion != 'COMISION'" % num
+		stmt = text(strq)
+		cant = db.session.execute(stmt)
+		return render_template("ticketvsfactura.html", lista=result, nombre=nombre, factura=num, cantidad=cant)
+	return render_template("ticketvsfactura.html", nombre=nombre)
 
 @app.route('/contanto')
 def contacto():
@@ -254,7 +271,7 @@ def ticket():
 		obser = request.form["comentarios"]
 		if (len(request.form.getlist('validar'))) < 1:
 			tra = request.form["transaccion"]
-			query1 = Ticket.query.filter_by(transaccion=tra).first()
+			query1 = Ticket.query.filter_by(nuFolio=tra).first()
 			if query1 != None:
 				flash("El ticket ya fue capturado")
 				nombre = (session['username']).upper()
@@ -358,28 +375,28 @@ def get_fileXls(filename):
 				'odoAnt' : sheet.cell(i+2,16).value,
 			}
 			lista1.append(data)
-			for i in range(sheet.nrows-2):
-				combustible=Combustible(
-					factura = sheet.cell(i+2,0).value,
-					leyenda = sheet.cell(i+2,1).value,
-					placa = str(sheet.cell(i+2,2).value),
-					nutarjeta = sheet.cell(i+2,3).value,
-					centroCosto = sheet.cell(i+2,4).value,
-					fechaCarga = exceldate(sheet.cell(i+2,5).value) +' '+ str(sheet.cell(i+2,6).value),
-					nuFolio = sheet.cell(i+2,7).value,
-					esCarga = sheet.cell(i+2,8).value,
-					nombreEs = sheet.cell(i+2,9).value,
-					descripcion = sheet.cell(i+2,10).value,
-					litros = sheet.cell(i+2,11).value,
-					precio = sheet.cell(i+2,12).value,
-					importe =sheet.cell(i+2,14).value,
-					odom = sheet.cell(i+2,15).value,
-					odoAnt = sheet.cell(i+2,16).value,
-					kmRec = sheet.cell(i+2,17).value,
-					kmLts = str(sheet.cell(i+2,18).value),
-					pKm = sheet.cell(i+2,19).value,
-					conductor = sheet.cell(i+2,20).value,
-				)
+		for i in range(sheet.nrows-2):
+			combustible=Combustible(
+				factura = sheet.cell(i+2,0).value,
+				leyenda = sheet.cell(i+2,1).value,
+				placa = str(sheet.cell(i+2,2).value),
+				nutarjeta = sheet.cell(i+2,3).value,
+				centroCosto = sheet.cell(i+2,4).value,
+				fechaCarga = exceldate(sheet.cell(i+2,5).value) +' '+ str(sheet.cell(i+2,6).value),
+				nuFolio = sheet.cell(i+2,7).value,
+				esCarga = sheet.cell(i+2,8).value,
+				nombreEs = sheet.cell(i+2,9).value,
+				descripcion = sheet.cell(i+2,10).value,
+				litros = sheet.cell(i+2,11).value,
+				precio = sheet.cell(i+2,12).value,
+				importe =sheet.cell(i+2,14).value,
+				odom = sheet.cell(i+2,15).value,
+				odoAnt = sheet.cell(i+2,16).value,
+				kmRec = sheet.cell(i+2,17).value,
+				kmLts = str(sheet.cell(i+2,18).value),
+				pKm = sheet.cell(i+2,19).value,
+				conductor = sheet.cell(i+2,20).value,
+			)
 			db.session.add(combustible)
 			db.session.commit()
 		flash('El registro fue agragado con exito, Factura No. {}'.format(str(int(fact))))

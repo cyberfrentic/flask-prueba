@@ -66,8 +66,6 @@ class Combustible(db.Model):
 	centroCosto = 	db.Column(db.String(20))
 	fechaCarga = 	db.Column(db.DateTime)
 	nuFolio = 		db.Column(db.Integer)
-	nuFolio_id = 	db.Column(db.Integer, db.ForeignKey('ticket.id'))
-	Folio = 		db.relationship('Ticket')
 	esCarga = 		db.Column(db.String(10))
 	nombreEs = 		db.Column(db.String(15))
 	descripcion = 	db.Column(db.String(15))
@@ -80,9 +78,6 @@ class Combustible(db.Model):
 	kmLts = 		db.Column(db.String(10))
 	pKm = 			db.Column(db.Float)
 	conductor = 	db.Column(db.String(10))
-
-	def __repr__(self):
-		return "<Combustible nuFolio='%s'>" % (self.nuFolio)
 
 class Ticket(db.Model):
 	__tablename='ticket'
@@ -98,6 +93,3 @@ class Ticket(db.Model):
 	medio = db.Column(db.String(8))
 	placa = db.Column(db.String(9))
 	observaciones = db.Column(db.Text)
-
-	def __repr__(self):
-		return "<Ticket nuFolio='%s'>" % (self.nuFolio)
