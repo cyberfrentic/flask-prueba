@@ -1,15 +1,12 @@
-from flask import Flask
-from flask import render_template
-from flask import request
+from flask import Flask, render_template, request, redirect, url_for
 from forms import Create_Form, LoginForm, Factura
 from flask_wtf import CsrfProtect
-from flask import redirect, url_for
 from flask import session
 from flask import flash
 from config import DevelopmentConfig
 from models import db
 from models import User, Compras, Padron, Combustible, Ticket
-from flask import Flask, request, redirect, url_for, send_from_directory
+from flask import send_from_directory
 from werkzeug.utils import secure_filename
 from xml.dom import minidom
 import collections as co
@@ -17,6 +14,7 @@ import os
 from models import Compras, Articulos
 from clases.fpdf2 import imprimir, imprimir2
 from clases.fpdf3 import tabla
+from clases.gasolina1 import tabla as gasolina
 from flask import send_file
 from sqlalchemy import distinct
 from sqlalchemy.sql import text
@@ -39,20 +37,18 @@ app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
 crsf = CsrfProtect()
 
-
 @app.before_request
 def before_request():
-	if 'username' not in session and request.endpoint in ['constancias','upload_file','contacto','get_file','create', 'folio', 'fondoContable', 'ticket']:
+	if 'username' not in session and request.endpoint in ['constancias','upload_file','contacto','get_file','create', 'folio', 'fondoContable', 'ticket', 'ticketvsfactura', 'consultaTicket']:
 		return redirect(url_for('home'))
 	elif 'username' in session and request.endpoint in ['login']:
 		return redirect(url_for('home'))
 	elif 'username' in session and (session['username']) != 'hugo' and request.endpoint in ['create']:
 		return redirect(url_for('home'))
-	elif 'username' in session and (session['username']) == 'lorena' and request.endpoint in ['upload_file','get_file','create', 'folio','fondoContable', 'ticket']:
+	elif 'username' in session and (session['username']) == 'lorena' and request.endpoint in ['upload_file','get_file','create', 'folio','fondoContable', 'ticket', 'ticketvsfactura', 'consultaTicket']:
 		return redirect(url_for('home'))
 	elif 'username' in session and (session['username']) == 'pascual' and request.endpoint in ['constancias']:
 		return redirect(url_for('home'))
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -70,7 +66,6 @@ def login():
 			flash(error_message)
 	return render_template('login.html', form = login_form)
 
-
 @app.route('/create', methods=['GET', 'POST'])
 def create():
     create_form = Create_Form(request.form)
@@ -81,12 +76,10 @@ def create():
     				create_form.email.data)
     	db.session.add(user)
     	db.session.commit()
-
     	succes_message = 'Usuario registrado en la base de datos'
     	flash(succes_message)
     nombre = (session['username']).upper()
     return render_template('index.html', form=create_form, nombre=nombre)
-
 
 @app.route('/')
 @app.route('/home')
@@ -96,7 +89,6 @@ def home():
 		return render_template("home.html",nombre=nombre)
 	else:
 		return render_template("home.html")
-
 
 @app.route('/constancias',  methods=["GET", "POST"])
 def constancias():
@@ -133,8 +125,6 @@ def constancias():
 	nombre = (session['username']).upper()
 	return render_template("constancias.html", nombre=nombre)
 	
-	
-
 @app.route('/fondoContable',  methods=["GET", "POST"])
 def fondoContable():
 	nombre = (session['username']).upper()
@@ -164,8 +154,10 @@ def fondoContable():
 					fecha_fin = request.form['fecha_Final']
 					if str(fecha_ini)> str(fecha_fin):
 						flash('La consulta no se puede realizar, la fecha final debe ser mayo o igual a la fecha inicial')
-					query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin))
-					return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
+						return render_template("fondoContable.html", nombre=nombre)
+					else:
+						query2 = db.session.query(Compras.id, Compras.fecha, Compras.total, Compras.subtotal, Compras.folio, Compras.iva, Compras.rfc, Compras.nombre, Compras.UUiD).filter(Compras.fecha.between(fecha_ini, fecha_fin))
+						return render_template("fondoContable.html", lista=lista, lista2=query2, nombre=nombre)
 				elif '3' == s:
 					proveedor = request.form['TextProv']
 					query2 = Compras.query.filter_by(nombre=proveedor).all()
@@ -216,7 +208,10 @@ def fondoContable():
 
 @app.route('/ticketvsfactura',  methods=["GET", "POST"])
 def ticketvsfactura():
-	nombre = (session['username']).upper()
+	if 'username' in session:
+		nombre = (session['username']).upper()
+	else:
+		nombre='Login'
 	if request.method=='POST':
 		num = request.form['numero']
 		strq = "select t1.nuFolio, t1.placa,t1.litros, t1.importe from combustible t1 where t1.nufolio not in\
@@ -229,6 +224,109 @@ def ticketvsfactura():
 		cant = db.session.execute(stmt)
 		return render_template("ticketvsfactura.html", lista=result, nombre=nombre, factura=num, cantidad=cant)
 	return render_template("ticketvsfactura.html", nombre=nombre)
+
+@app.route('/consultaTicket', methods=["GET", "POST"])
+def consultaTicket():
+	nombre = (session['username']).upper()
+	global p, p2, p3, p4, p5, fecha_ini, fecha_fin, total1, total2, total3, total4, total5, lit1, lit2, lit3, lit4, lit5
+	if request.method=="POST":
+		if 'form1' in request.form['btn1']:
+			fecha_ini = request.form['fecha_Inicial']
+			fecha_fin = request.form['fecha_Final']
+			if str(fecha_ini)> str(fecha_fin):
+				flash("La consulta no se puede realizar, la fecha inicial debe ser igual o menor a la fecha final")
+				return render_template("consultaTicket.html", nombre=nombre)
+			else:
+				p=[]
+				p2=[]
+				p3=[]
+				p4=[]
+				p5=[]
+				x=[]
+				j=0
+				lit1=0
+				lit2=0
+				lit3=0
+				lit4=0
+				lit5=0
+				total1=0
+				total2=0
+				total3=0
+				total4=0
+				total5=0
+				gerencia = ["TA-9629-G"]
+				tecnica = ["TA-9625-G", "TA-9642-G", "TA-5720-G", "TA-9639-G", "SZ-1007-H", "SZ-1009-H", "SZ-9449-H"]
+				comercial = ["SZ-1008-H", "TA-9638-G"]
+				tarjeta1=["BIDON", "SZ-9439-H","TB-5720-G"]
+				tarjeta2=["BIDON DIESEL", "BIDON GASOLINA", "VERSA SEDAN", "RLT3S", "RLT1S", "VCN9A"]
+				for item in gerencia:
+					strq = "select placa as placa, sum(litros) as litros, sum(total) as total  from ticket  where placa = '%s' and fecha between '%s' and '%s' " % (item, fecha_ini, fecha_fin)
+					stmt = text(strq)
+					cant = db.session.execute(stmt)
+					for i in cant:
+						if (i[0]!= None):
+							j+=1
+							x=(j, i[0],("{0:.2f}".format(i[1])), ("{0:.2f}".format(i[2])))
+							lit1 += float(x[2])
+							total1 += float(x[3])
+							p.append(x)
+				for item in tecnica:
+					strq = "select placa as placa, sum(litros) as litros, sum(total) as total  from ticket  where placa = '%s' and fecha between '%s' and '%s' " % (item, fecha_ini, fecha_fin)
+					stmt = text(strq)
+					cant = db.session.execute(stmt)
+					for i in cant:
+						if (i[0]!= None):
+							j+=1
+							x=(j, i[0],("{0:.2f}".format(i[1])), ("{0:.2f}".format(i[2])))
+							lit2 += float(x[2])
+							total2 += float(x[3])
+							p2.append(x)
+				for item in comercial:
+					strq = "select placa as placa, sum(litros) as litros, sum(total) as total  from ticket  where placa = '%s' and fecha between '%s' and '%s' " % (item, fecha_ini, fecha_fin)
+					stmt = text(strq)
+					cant = db.session.execute(stmt)
+					for i in cant:
+						if (i[0]!= None):
+							j+=1
+							x=(j, i[0],("{0:.2f}".format(i[1])), ("{0:.2f}".format(i[2])))
+							print (x[2])
+							lit3 += float(x[2])
+							total3 += float(x[3])
+							p3.append(x)
+				for item in tarjeta1:
+					strq = "select placa as placa, sum(litros) as litros, sum(total) as total  from ticket  where placa = '%s' and fecha between '%s' and '%s' " % (item, fecha_ini, fecha_fin)
+					stmt = text(strq)
+					cant = db.session.execute(stmt)
+					for i in cant:
+						if (i[0]!= None):
+							j+=1
+							x=(j, i[0],("{0:.2f}".format(i[1])), ("{0:.2f}".format(i[2])))
+							print (x[2])
+							lit4 += float(x[2])
+							total4 += float(x[3])
+							p4.append(x)
+				for item in tarjeta2:
+					strq = "select placa as placa, sum(litros) as litros, sum(total) as total  from ticket  where placa = '%s' and fecha between '%s' and '%s' " % (item, fecha_ini, fecha_fin)
+					stmt = text(strq)
+					cant = db.session.execute(stmt)
+					for i in cant:
+						if (i[0]!= None):
+							j+=1
+							x=(j, i[0],("{0:.2f}".format(i[1])), ("{0:.2f}".format(i[2])))
+							print (x[2])
+							lit5 += float(x[2])
+							total5 += float(x[3])
+							p5.append(x)
+				print(p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total1, total2, total3, total4, total5)					
+				return render_template("consultaTicket.html", lista=p, lista2=p2, lista3=p3, lista4=p4, lista5=p5, litros1= lit1, litros2=lit2, litros3=lit3, litros4=lit4, litros5=lit5, total1=total1, total2=total2, total3=total3, total4=total4, total5=total5, nombre=nombre)
+		if 'form2' in request.form['btn1']:
+			x = gasolina(fecha_ini, fecha_fin, p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total1, total2, total3, total4, total5)
+			return (x)
+	if 'username' in session:
+		nombre = (session['username']).upper()
+		return render_template("consultaTicket.html", nombre=nombre)
+	else:
+		return render_template("consultaTicket.html")
 
 @app.route('/contanto')
 def contacto():
@@ -324,7 +422,6 @@ def folio():
 			else:
 				flash('El Registro Cuenta con un número de Fondo {}'.format(compras.folio))
 	return render_template('folio.html',nombre=nombre)
-
 
 @app.route("/servicios", methods=["GET", "POST"])
 def upload_file():
@@ -487,7 +584,6 @@ def get_fileXml(filename):
 	lista1.append(atributos)
 	nombre = (session['username']).upper()
 	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura, nombre=nombre)
-
 
 if __name__ == '__main__':
 	crsf.init_app(app)

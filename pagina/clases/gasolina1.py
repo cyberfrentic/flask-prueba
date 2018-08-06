@@ -13,7 +13,7 @@ class PDF(FPDF):
         # Logo  con esta ruta se dirige al server y no a la maquina cliente
         self.image(os.path.join(imagenes, "sintitulo.png"), 10, 5, 250)
         # Arial bold 15
-        self.set_font('Arial', 'B', 8)
+        self.set_font('Arial', 'B', 10)
         self.ln(15)
         # Move to the right
         #self.cell(100)
@@ -37,7 +37,12 @@ class PDF(FPDF):
             '12': 'Diciembre',
         }
         fecha = str(dia + ' ' + meses[mes] + ' ' + anio)
+        self.cell(0, 10, 'Departamento de Recursos Materiales', 0, 0, 'C')
+        self.ln(3)
+        self.set_font('Arial', 'B', 8)
         self.cell(0, 10, 'Reporte de consumo de Combustible', 0, 0, 'C')
+        self.ln(3)
+        self.cell(0, 10, fecha, 0, 0, 'C')
         self.ln(3)
         # Line break
         self.ln(20)
@@ -122,7 +127,7 @@ def letras():
     anio = str(datetime.today())[:4]
     return (dias[dia] + ' dias del mes de ' + meses[mes] + ' de ' + anios[anio]).upper()
 
-def tabla(datos, totales):
+def tabla(fecha1, fecha2, p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total1, total2, total3, total4, total5):
     # Instantiation of inherited class
     pdf = PDF()
     pdf.alias_nb_pages()
@@ -143,7 +148,7 @@ def tabla(datos, totales):
     # Set column width to 1/4 of effective page width to distribute content 
     # evenly across table and page
     col_width = epw / 7
-    data=('No. Econon.', 'Vehiculo', 'Placa', 'Adscripción', 'lts. Mag. Diesel', 'Ipomporte')
+    data=('No.', 'Placa', 'Litros', 'Importe')
 
     # Document title centered, 'B'old, 14 pt
     pdf.set_font('Times','B',14.0) 
@@ -152,40 +157,82 @@ def tabla(datos, totales):
     pdf.ln(0.5)
  
     # Text height is the same as current font size
-    th = pdf.font_size  
+    th = pdf.font_size 
+    pdf.cell(0, 10, 'Periodo comprendido desde: '+fecha1+' a '+fecha2, 0, 0, 'C')
+    pdf.ln(8)
     bandera=0
     for item in data:
-        bandera+=1
-        if bandera==1 or bandera==2 or bandera==3 or bandera==4:
-            pdf.cell(col_width-18, th, str(item),  border=1)
-        elif bandera==5:
-            pdf.cell(col_width-8, th, str(item), border=1)
-        else:
-            pdf.cell(col_width+35, th, str(item), border=1)
-        #pdf.cell(col_width, th, str(item), border=1)
+        pdf.cell(col_width, th, str(item), border=1)
     pdf.ln()
-    for row in datos:
-        bandera=0
-        for datum in row:
-            # Enter data in colums
-            # Notice the use of the function str to coerce any input to the 
-            # string type. This is needed
-            # since pyFPDF expects a string, not a number.
-            bandera+=1
-            if bandera==1 or bandera==2 or bandera==3 or bandera==4:
-                pdf.cell(col_width-18, th, str(datum), border=1)
-            elif bandera==5:
-                pdf.cell(col_width-8, th, str(datum), border=1)
-            elif bandera==6:
-                pdf.cell(col_width+35, th, str(datum)[:34].upper(), border=1)
-            else:
-                pdf.cell(col_width+35, th, str(datum), border=1)
+    if p:
+        pdf.cell(col_width, th, "Gerencia", border=1)
         pdf.ln(th)
-    pdf.ln(2)
-    pdf.set_font('Times','B',14.0)
-    th = pdf.font_size   
-    pdf.cell(30, th, 'TOTAL: $ '+ str(totales), 'C', 1)
-    
+        for row in p:
+            for raw in row:
+                pdf.cell(col_width, th, str(raw), border=1)
+            pdf.ln(th)
+        pdf.cell(col_width, th, "Totales:", border=1)
+        pdf.cell(col_width,th," ", border=1)
+        pdf.cell(col_width,th,str(lit1), border=1)
+        pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total1))), border=1)
+        pdf.ln(th)
+    if p2:
+        pdf.cell(col_width, th, "Subgerencia Técnica", border=1)
+        pdf.ln(th)
+        for row in p2:
+            for raw in row:
+                pdf.cell(col_width, th, str(raw), border=1)
+            pdf.ln(th)
+        pdf.cell(col_width, th, "Totales:", border=1)
+        pdf.cell(col_width,th," ", border=1)
+        pdf.cell(col_width,th,str(lit2), border=1)
+        pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total2))), border=1)
+        pdf.ln(th)
+    if p3:
+        pdf.cell(col_width, th, "Subgerencia Comercial", border=1)
+        pdf.ln(th)
+        for row in p3:
+            for raw in row:
+                pdf.cell(col_width, th, str(raw), border=1)
+            pdf.ln(th)
+        pdf.cell(col_width, th, "Totales:", border=1)
+        pdf.cell(col_width,th," ", border=1)
+        pdf.cell(col_width,th,str(lit3), border=1)
+        pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total3))), border=1)
+        pdf.ln(th)
+    if p4:
+        pdf.cell(col_width, th, "Tarjeta 1", border=1)
+        pdf.ln(th)
+        for row in p4:
+            for raw in row:
+                pdf.cell(col_width, th, str(raw), border=1)
+            pdf.ln(th)
+        pdf.cell(col_width, th, "Totales:", border=1)
+        pdf.cell(col_width,th," ", border=1)
+        pdf.cell(col_width,th,str(lit4), border=1)
+        pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total4))), border=1)
+        pdf.ln(th)
+    if p5:
+        pdf.cell(col_width, th, "Tarjeta 2", border=1)
+        pdf.ln(th)
+        for row in p5:
+            for raw in row:
+                pdf.cell(col_width, th, str(raw), border=1)
+            pdf.ln(th)
+        pdf.cell(col_width, th, "Totales:", border=1)
+        pdf.cell(col_width,th," ", border=1)
+        pdf.cell(col_width,th,str(lit5), border=1)
+        pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total5))), border=1)
+        pdf.ln(th)
+
+    totalGral = total1 + total2 + total3 + total4 + total5
+    totalLitros = lit1 + lit2 + lit3 + lit4 + lit5
+    pdf.ln(th)
+    pdf.cell(col_width, th, "Totales General:", border=1)
+    pdf.cell(col_width,th," ", border=1)
+    pdf.cell(col_width,th,str(totalLitros), border=1)
+    pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(totalGral))), border=1)
+    pdf.ln(th)
 
     response = make_response(pdf.output(dest='S').encode('latin-1'))
     response.headers['Content-Type'] = 'application/pdf'

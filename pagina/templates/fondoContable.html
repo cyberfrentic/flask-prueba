@@ -93,13 +93,13 @@
     	{% if lista2 %}
     		<center>
                 <div class="container">
-                <div class="row-fluid">
-                    <form name="form2" class="form-search" method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                        <button type="submint" class="btn btn-success" name="btn1" value="form2"><i class="icon-print icon-white"></i> Imprimir</button>   
-                    </form>
+                    <div class="row-fluid">
+                        <form name="form2" class="form-search" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <button type="submint" class="btn btn-success" name="btn1" value="form2"><i class="icon-print icon-white"></i> Imprimir</button>   
+                        </form>
+                    </div>
                 </div>
-            </div>
     			<div class="table table-responsive"  >
     				<table class="table table-hover table-responsive table-bordered" >
     					<caption class="footer">Datos de Factura</caption>
