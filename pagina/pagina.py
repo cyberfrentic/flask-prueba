@@ -1,21 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, send_file
 from forms import Create_Form, LoginForm, Factura
 from flask_wtf import CsrfProtect
-from flask import session
-from flask import flash
 from config import DevelopmentConfig
-from models import db
-from models import User, Compras, Padron, Combustible, Ticket
-from flask import send_from_directory
+from models import db, User, Compras, Padron, Combustible, Ticket, Articulos, InfomativoIssste, InformativoImss
 from werkzeug.utils import secure_filename
 from xml.dom import minidom
 import collections as co
 import os
-from models import Compras, Articulos
 from clases.fpdf2 import imprimir, imprimir2
 from clases.fpdf3 import tabla
 from clases.gasolina1 import tabla as gasolina
-from flask import send_file
 from sqlalchemy import distinct
 from sqlalchemy.sql import text
 import xlrd
@@ -47,7 +41,7 @@ def before_request():
 		return redirect(url_for('home'))
 	elif 'username' in session and (session['username']) == 'lorena' and request.endpoint in ['upload_file','get_file','create', 'folio','fondoContable', 'ticket', 'ticketvsfactura', 'consultaTicket']:
 		return redirect(url_for('home'))
-	elif 'username' in session and (session['username']) == 'pascual' and request.endpoint in ['constancias']:
+	elif 'username' in session and (session['username']) == 'pascual' and (session['username']) == 'matty' and (session['username']) == 'merle' and (session['username']) == 'wilma' and request.endpoint in ['constancias']:
 		return redirect(url_for('home'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -427,10 +421,10 @@ def folio():
 def upload_file():
     if request.method == "POST":
         if not "file" in request.files:
-            return "No file part in the form."
+            flash("No file part in the form.")
         f = request.files["file"]
         if f.filename == "":
-            return "No file selected."
+            flash("No file selected.")
         if f and allowed_file(f.filename):
             filename = secure_filename(f.filename)
             nombre, extension = filename.split('.')
@@ -452,57 +446,98 @@ def get_fileXls(filename):
 	lista1=[]
 	lista2=[]
 	fact= sheet.cell(2,0).value
-	try:
-		uuid = Combustible.query.filter_by(factura=fact).first()
-		flash('El registro no existe')
-		for i in range(sheet.nrows-2):	
-			data={
-				'placa' : str(sheet.cell(i+2,2).value),
-				'nutarjeta' : sheet.cell(i+2,3).value,
-				'centroCosto' : sheet.cell(i+2,4).value,
-				'fechaCarga' : exceldate(sheet.cell(i+2,5).value) +' '+ str(sheet.cell(i+2,6).value),
-				'nuFolio' : sheet.cell(i+2,7).value,
-				'esCarga' : sheet.cell(i+2,8).value,
-				'nombreEs' : sheet.cell(i+2,9).value,
-				'descripcion' : sheet.cell(i+2,10).value,
-				'litros' : sheet.cell(i+2,11).value,
-				'precio' : sheet.cell(i+2,12).value,
-				'importe' : sheet.cell(i+2,14).value,
-				'odom' : sheet.cell(i+2,15).value,
-				'odoAnt' : sheet.cell(i+2,16).value,
-			}
-			lista1.append(data)
-		for i in range(sheet.nrows-2):
-			combustible=Combustible(
-				factura = sheet.cell(i+2,0).value,
-				leyenda = sheet.cell(i+2,1).value,
-				placa = str(sheet.cell(i+2,2).value),
-				nutarjeta = sheet.cell(i+2,3).value,
-				centroCosto = sheet.cell(i+2,4).value,
-				fechaCarga = exceldate(sheet.cell(i+2,5).value) +' '+ str(sheet.cell(i+2,6).value),
-				nuFolio = sheet.cell(i+2,7).value,
-				esCarga = sheet.cell(i+2,8).value,
-				nombreEs = sheet.cell(i+2,9).value,
-				descripcion = sheet.cell(i+2,10).value,
-				litros = sheet.cell(i+2,11).value,
-				precio = sheet.cell(i+2,12).value,
-				importe =sheet.cell(i+2,14).value,
-				odom = sheet.cell(i+2,15).value,
-				odoAnt = sheet.cell(i+2,16).value,
-				kmRec = sheet.cell(i+2,17).value,
-				kmLts = str(sheet.cell(i+2,18).value),
-				pKm = sheet.cell(i+2,19).value,
-				conductor = sheet.cell(i+2,20).value,
-			)
-			db.session.add(combustible)
-			db.session.commit()
-		flash('El registro fue agragado con exito, Factura No. {}'.format(str(int(fact))))
-	except ValueError:
-		flash('El registro existe en la base de datos, Factura No. {}'.format(str(int(fact))))
+	if fact:
+		try:
+			uuid = Combustible.query.filter_by(factura=fact).first()
+			if uuid == None:
+				flash('El registro no existe')
+				for i in range(sheet.nrows-2):	
+					data={
+						'placa' : str(sheet.cell(i+2,2).value),
+						'nutarjeta' : sheet.cell(i+2,3).value,
+						'centroCosto' : sheet.cell(i+2,4).value,
+						'fechaCarga' : exceldate(sheet.cell(i+2,5).value) +' '+ str(sheet.cell(i+2,6).value),
+						'nuFolio' : sheet.cell(i+2,7).value,
+						'esCarga' : sheet.cell(i+2,8).value,
+						'nombreEs' : sheet.cell(i+2,9).value,
+						'descripcion' : sheet.cell(i+2,10).value,
+						'litros' : sheet.cell(i+2,11).value,
+						'precio' : sheet.cell(i+2,12).value,
+						'importe' : sheet.cell(i+2,14).value,
+						'odom' : sheet.cell(i+2,15).value,
+						'odoAnt' : sheet.cell(i+2,16).value,
+					}
+					lista1.append(data)
+				for i in range(sheet.nrows-2):
+					combustible=Combustible(
+						factura = sheet.cell(i+2,0).value,
+						leyenda = sheet.cell(i+2,1).value,
+						placa = str(sheet.cell(i+2,2).value),
+						nutarjeta = sheet.cell(i+2,3).value,
+						centroCosto = sheet.cell(i+2,4).value,
+						fechaCarga = exceldate(sheet.cell(i+2,5).value) +' '+ str(sheet.cell(i+2,6).value),
+						nuFolio = sheet.cell(i+2,7).value,
+						esCarga = sheet.cell(i+2,8).value,
+						nombreEs = sheet.cell(i+2,9).value,
+						descripcion = sheet.cell(i+2,10).value,
+						litros = sheet.cell(i+2,11).value,
+						precio = sheet.cell(i+2,12).value,
+						importe =sheet.cell(i+2,14).value,
+						odom = sheet.cell(i+2,15).value,
+						odoAnt = sheet.cell(i+2,16).value,
+						kmRec = sheet.cell(i+2,17).value,
+						kmLts = str(sheet.cell(i+2,18).value),
+						pKm = sheet.cell(i+2,19).value,
+						conductor = sheet.cell(i+2,20).value,
+					)
+					db.session.add(combustible)
+					db.session.commit()
+				flash('El registro fue agragado con exito, Factura No. {}'.format(str(int(fact))))
+			else:
+				flash('El registro existe en la base de datos, Factura No. {}'.format(str(int(fact))))
+				nombre = (session['username']).upper()
+				return render_template("leer.html", nombre=nombre)
+		except ValueError:
+			flash('El registro existe en la base de datos, Factura No. {}'.format(str(int(fact))))
+			nombre = (session['username']).upper()
+			return render_template("leer.html", nombre=nombre)
 		nombre = (session['username']).upper()
-		return render_template("leer.html", nombre=nombre)
-	nombre = (session['username']).upper()
-	return render_template("combustible.html", data=lista1, fact=(str(int(fact))), nombre=nombre)
+		return render_template("combustible.html", data=lista1, fact=(str(int(fact))), nombre=nombre)
+	else:
+		fecha = exceldate(int(sheet.cell(2,1).value))
+		dImss=dict()
+		dIssste=dict()
+		lista1=[]
+		lista2=[]
+		if type(fecha) is str :
+			if int(fecha[5:7])>0 and int(fecha[5:7])<13 :
+				mes=(fecha[5:7])
+				anio = (fecha[0:4])
+				consul = InformativoImss.query.filter_by(mes=mes).filter_by(anio=anio).first()
+				if consul == None:
+					for i in range(sheet.nrows-5):
+						if (sheet.cell(i+5,43).value==0 and sheet.cell(i+5,68).value==0):
+							pass
+						else:
+							if sheet.cell(i+5,43).value != 0:
+								dImss = {
+									'clave': str(sheet.cell(i+5,0).value),
+									'nombre': sheet.cell(i+5,1).value,
+									'imssCyVE': "{0:.2f}".format(sheet.cell(i+5,45).value), 
+									'imssEyMP' : "{0:.2f}".format(sheet.cell(i+5,47).value), 
+									'imssIyVP' : "{0:.2f}".format(sheet.cell(i+5,48).value),
+									'imssCyVp' : "{0:.2f}".format(sheet.cell(i+5,49).value),
+									'imssRTP' : "{0:.2f}".format(sheet.cell(i+5,50).value),
+									'imssGuaP' : "{0:.2f}".format(sheet.cell(i+5,51).value),
+									'imssRetP' : "{0:.2f}".format(sheet.cell(i+5,52).value),
+									'INFONAVITP':"{0:.2f}".format(sheet.cell(i+5,53).value),
+									'DESC. INFONAVIT':"{0:.2f}".format(sheet.cell(i+5,112).value + sheet.cell(i+5,113).value),
+									'total' :"{0:.2f}".format(sheet.cell(i+5,45).value+sheet.cell(i+5,47).value+sheet.cell(i+5,48).value+sheet.cell(i+5,49).value+sheet.cell(i+5,50).value+sheet.cell(i+5,51).value+sheet.cell(i+5,52).value+sheet.cell(i+5,53).value+sheet.cell(i+5,112).value+sheet.cell(i+5,113).value)
+								}
+								lista1.append(dImss)
+					nombre = (session['username']).upper()
+					return render_template("comparativoHumnos.html", data=lista1, fecha= mes+'-'+anio, nombre=nombre)
+	return ("no hay datos")
 
 @app.route("/uploads/xml/<filename>", methods=['GET', 'POST'])
 def get_fileXml(filename):

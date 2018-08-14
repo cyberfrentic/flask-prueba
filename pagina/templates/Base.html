@@ -11,10 +11,13 @@
   <script src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
 <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
   
+  
 	
 </head>
+
 <body background="{{ url_for('static', filename='img/capa.jpg') }}">
-	<div class="navbar  navbar-inverse navbar-fixed-top">
+  
+	<div class="navbar  navbar-inverse navbar-fixed-top" id="noprint">
 		<div class="navbar-inner">
 			<div class="container">
 				<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -43,11 +46,25 @@
                 <li><a href="/consultaTicket">Total Ticket's</a></li>
                <!-- <li><a href="#">One more separated link</a></li>-->
               </ul>
-              <!-- Fin Menu desplegable-->
+            </li>
+            <!-- Fin Menu desplegable-->
+
+            <!--Inicio Menu desplegable-->
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Rec. Humanos <b class="caret"></b></a>
+              <ul class="dropdown-menu" style="background-color: #030303!important;">
+                <li><a href="/servicios">Captura</a></li>
+                <li class="divider"></li>
+                <li class="nav-header"><strong>Consultas</strong></li>
+                <li><a href="#">Detalles</a></li>
+               <!-- <li><a href="#">One more separated link</a></li>-->
+              </ul>
+            </li>
+            <!-- Fin Menu desplegable-->
             <li><a href="/contanto">Contacto</a></li>
 						<li><a href="/create">Crear Usuario</a></li>
 						<!--<li><a href="">hugo</a></li>-->
-                      </li>
+                      
 					
 					</ul>
 					<ul class="nav pull-right">

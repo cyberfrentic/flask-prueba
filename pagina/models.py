@@ -80,7 +80,7 @@ class Combustible(db.Model):
 	conductor = 	db.Column(db.String(10))
 
 class Ticket(db.Model):
-	__tablename='ticket'
+	__tablename__='ticket'
 	id = db.Column(db.Integer, primary_key=True)
 	nuFolio = db.Column(db.Integer)
 	fecha = db.Column(db.DateTime)
@@ -93,3 +93,38 @@ class Ticket(db.Model):
 	medio = db.Column(db.String(8))
 	placa = db.Column(db.String(9))
 	observaciones = db.Column(db.Text)
+
+class InformativoImss(db.Model):
+	__tablename__='informativoimss'
+	id = db.Column(db.Integer, primary_key=True)
+	clave = db.Column(db.String(9))
+	nombre = db.Column(db.String(34))
+	mes = db.Column(db.Integer)
+	anio = db.Column(db.Integer)
+	imssEyME = db.Column(db.Float)
+	imssIyVE = db.Column(db.Float)
+	imssEyMP = db.Column(db.Float)
+	imssIyVP =  db.Column(db.Float)
+	imssCyVP = db.Column(db.Float)
+	imssRTP  = db.Column(db.Float)
+	imssGuaP = db.Column(db.Float)
+	imssRetP = db.Column(db.Float)
+
+class InfomativoIssste(db.Model):
+	__tablename__='informativoissste'
+	id = db.Column(db.Integer, primary_key=True)
+	clave = db.Column(db.String(9))
+	nombre = db.Column(db.String(34))
+	mes = db.Column(db.Integer)
+	anio = db.Column(db.Integer)
+	retirIssste = db.Column(db.Float)
+	fovissste = db.Column(db.Float)
+	salBaseIsteEm = db.Column(db.Float)
+	salBaseIstPa = db.Column(db.Float)
+	isteSegSaludP = db.Column(db.Float)
+	isteRtPat = db.Column(db.Float)
+	isteIyVPat = db.Column(db.Float)
+	isteServSocP = db.Column(db.Float)
+	isteCyVPat = db.Column(db.Float)
+	ajusteIstePat = db.Column(db.Float)
+	exePrevSoc = db.Column(db.Float)
