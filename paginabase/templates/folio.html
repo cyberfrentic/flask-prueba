@@ -1,0 +1,63 @@
+{% extends 'Base.html' %}
+{%block nombre%}  
+    {% if nombre %}
+      <li><a href="#"><icon class="icon-user icon-white"></icon> {{nombre}}</a></li>
+    {% else %}
+        <li><a href="/login"><icon class="icon-user icon-white"></icon> Login</a></li> 
+    {% endif %}
+{%endblock%}
+
+    	{% block content %}
+            {% if lista %}
+            <center>
+    			<div class="table table-responsive"  >
+    				<table class="table table-hover table-responsive table-bordered" >
+    					<caption class="footer">Datos de Factura</caption>
+    					<tbody>
+    						<tr class="success">
+    							<td><strong>Fecha</strong></td>
+    							<td><strong>Total</strong></th>
+    							<td><strong>Subtotal</strong></th>
+    							<td><strong>I. V. A.</strong></th>
+    							<td><strong>R. F. C.</strong></th>
+    							<td><strong>Nombre</strong></th>
+    							<td><strong>UUID</strong></th>
+    						</tr>
+    						<tr class="info">
+    							{% for item in lista %}    								
+    								<td>
+    									{{ item }}
+    								</td>    	
+    							{% endfor %}
+    						</tr>
+    					</tbody>
+    				</table>
+    			</div>
+            </center>
+            <h1>Asignación de Número de Folio</h1>
+            <div class="container">
+                <div class="row-fluid">
+                    <form name ="form2" class="form-search" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <span class="add-on"><i class="icon-wrench"></i></span>
+                        <input type="text" class="input-medium search-query" id="numero" name="numero" placeholder="Numero de fondo">
+                        <button type="submint" class="btn btn-success" name="btn1" value="form2" ><i class="icon-wrench icon-white"></i> Asignar</button>
+                    </form>
+                </div>
+            </div>
+        {%else%}
+            <h1>Busqueda de Factura</h1>
+                <div class="container">
+                    <div class="row-fluid">
+                        <form name="form1" class="form-search" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <span class="add-on"><i class="icon-search"></i></span>
+                            <input type="text" class="input-medium search-query" id="folio" name="folio" placeholder="Numero de Folio">
+
+                            <button type="submint" class="btn btn-success" name="btn1" value="form1"><i class="icon-search icon-white"></i> Buscar</button>   
+                        </form>
+                    </div>
+                </div>
+
+    	{% endif %}
+    {% endblock %}

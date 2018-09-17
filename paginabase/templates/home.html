@@ -1,0 +1,60 @@
+﻿{% extends 'Base.html' %}
+{% block saludo %}
+{% endblock %}
+
+{% block calendario %}
+{% endblock %}
+
+{% block login %}
+{% endblock %}
+
+{% block content %}
+  <br>
+  <br>
+  <br>
+    <h1 class="mt-5">Inicio</h1>
+    <p>En esta página podrás encontrar el formulario correspondiente para la captura de las facturas de los distintos proveedores, con los que cuentas, ademas de la generacion de constancias de no adeudo en la Comisión de Agua Potable y Alcantarillado del estado de Quintana Roo.
+    </p>
+
+
+    <h4 class="mt-4">Contenido</h4>
+    
+    
+    <!-- imagenes -->
+
+  <div class="container">
+    <div class="row-fluid">
+      <div class="span12">
+        <ul>
+          <li class="span4">
+            <a href="static/img/lights.jpg" class="thumbnail">
+              <img class="img-rounded" src="{{ url_for('static', filename='img/lights.jpg') }}" alt="Lights" style="width:100%">
+              <div class="caption">
+                <p>Aurora Boreal</p>
+              </div>
+            </a>
+          </li>
+          <li class="span4">
+            <a href="static/img/nature.jpg" class="thumbnail">
+              <img class="img-rounded" src="{{ url_for('static', filename='img/nature.jpg') }}" alt="Nature" style="width:100%">
+              <div class="caption">
+                <p>Primavera</p>
+              </div>
+            </a>
+          </li>
+          <li class="span4">
+            <a href="static/img/fjords.jpg" class="thumbnail">
+              <img class="img-rounded" src="{{ url_for('static', filename='img/fjords.jpg') }}" alt="Fjords" style="width:100%">
+              <div class="caption">
+                <p>Vista Panoramica</p>
+              </div>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+    
+  
+  
+{% endblock %}

@@ -252,7 +252,7 @@ def consultaTicket():
 				tecnica = ["TA-9625-G", "TA-9642-G", "TA-5720-G", "TA-9639-G", "SZ-1007-H", "SZ-1009-H", "SZ-9449-H"]
 				comercial = ["SZ-1008-H", "TA-9638-G"]
 				tarjeta1=["BIDON", "SZ-9439-H","TB-5720-G"]
-				tarjeta2=["BIDON DIESEL", "BIDON GASOLINA", "VERSA SEDAN", "RLT3S", "RLT1S", "VCN9A"]
+				tarjeta2=["BIDON DI", "BIDON GAS", "UUF-101-E", "RLT3S", "RLT1S", "VCN9A"]
 				for item in gerencia:
 					strq = "select placa as placa, sum(litros) as litros, sum(total) as total  from ticket  where placa = '%s' and fecha between '%s' and '%s' " % (item, fecha_ini, fecha_fin)
 					stmt = text(strq)
@@ -520,10 +520,13 @@ def get_fileXls(filename):
 							pass
 						else:
 							if sheet.cell(i+5,43).value != 0:
+								total = float(sheet.cell(i+5,43).value + sheet.cell(i+5,44).value + sheet.cell(i+5,45).value + sheet.cell(i+5,47).value + sheet.cell(i+5,48).value + sheet.cell(i+5,49).value + sheet.cell(i+5,50).value + sheet.cell(i+5,51).value + sheet.cell(i+5,52).value + sheet.cell(i+5,53).value + sheet.cell(i+5,112).value  + sheet.cell(i+5,113).value)
 								dImss = {
 									'clave': str(sheet.cell(i+5,0).value),
 									'nombre': sheet.cell(i+5,1).value,
-									'imssCyVE': "{0:.2f}".format(sheet.cell(i+5,45).value), 
+									'imssCyVE': "{0:.2f}".format(sheet.cell(i+5,43).value),
+									'imssEyME' : "{0:.2f}".format(sheet.cell(i+5,44).value),
+									'imssIyVE' : "{0:.2f}".format(sheet.cell(i+5,45).value),  
 									'imssEyMP' : "{0:.2f}".format(sheet.cell(i+5,47).value), 
 									'imssIyVP' : "{0:.2f}".format(sheet.cell(i+5,48).value),
 									'imssCyVp' : "{0:.2f}".format(sheet.cell(i+5,49).value),
@@ -531,9 +534,9 @@ def get_fileXls(filename):
 									'imssGuaP' : "{0:.2f}".format(sheet.cell(i+5,51).value),
 									'imssRetP' : "{0:.2f}".format(sheet.cell(i+5,52).value),
 									'INFONAVITP':"{0:.2f}".format(sheet.cell(i+5,53).value),
-									'DESC. INFONAVIT':"{0:.2f}".format(sheet.cell(i+5,112).value + sheet.cell(i+5,113).value),
-									'total' :"{0:.2f}".format(sheet.cell(i+5,45).value+sheet.cell(i+5,47).value+sheet.cell(i+5,48).value+sheet.cell(i+5,49).value+sheet.cell(i+5,50).value+sheet.cell(i+5,51).value+sheet.cell(i+5,52).value+sheet.cell(i+5,53).value+sheet.cell(i+5,112).value+sheet.cell(i+5,113).value)
-								}
+									'DESC. INFONAVIT':"{0:.2f}".format(sheet.cell(i+5,112).value)  + "{0:.2f}".format(sheet.cell(i+5,113).value),
+									'total': "{0:.2f}".format(total),
+									}
 								lista1.append(dImss)
 					nombre = (session['username']).upper()
 					return render_template("comparativoHumnos.html", data=lista1, fecha= mes+'-'+anio, nombre=nombre)

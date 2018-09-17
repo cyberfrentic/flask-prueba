@@ -173,7 +173,7 @@ def tabla(fecha1, fecha2, p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total
             pdf.ln(th)
         pdf.cell(col_width, th, "Totales:", border=1)
         pdf.cell(col_width,th," ", border=1)
-        pdf.cell(col_width,th,str(lit1), border=1)
+        pdf.cell(col_width,th,str(("{0:.2f}".format(lit1))), border=1)
         pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total1))), border=1)
         pdf.ln(th)
     if p2:
@@ -185,7 +185,7 @@ def tabla(fecha1, fecha2, p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total
             pdf.ln(th)
         pdf.cell(col_width, th, "Totales:", border=1)
         pdf.cell(col_width,th," ", border=1)
-        pdf.cell(col_width,th,str(lit2), border=1)
+        pdf.cell(col_width,th,str(("{0:.2f}".format(lit2))), border=1)
         pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total2))), border=1)
         pdf.ln(th)
     if p3:
@@ -197,7 +197,7 @@ def tabla(fecha1, fecha2, p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total
             pdf.ln(th)
         pdf.cell(col_width, th, "Totales:", border=1)
         pdf.cell(col_width,th," ", border=1)
-        pdf.cell(col_width,th,str(lit3), border=1)
+        pdf.cell(col_width,th,str(("{0:.2f}".format(lit3))), border=1)
         pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total3))), border=1)
         pdf.ln(th)
     if p4:
@@ -209,7 +209,7 @@ def tabla(fecha1, fecha2, p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total
             pdf.ln(th)
         pdf.cell(col_width, th, "Totales:", border=1)
         pdf.cell(col_width,th," ", border=1)
-        pdf.cell(col_width,th,str(lit4), border=1)
+        pdf.cell(col_width,th,str(("{0:.2f}".format(lit4))), border=1)
         pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total4))), border=1)
         pdf.ln(th)
     if p5:
@@ -221,7 +221,7 @@ def tabla(fecha1, fecha2, p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total
             pdf.ln(th)
         pdf.cell(col_width, th, "Totales:", border=1)
         pdf.cell(col_width,th," ", border=1)
-        pdf.cell(col_width,th,str(lit5), border=1)
+        pdf.cell(col_width,th,str(("{0:.2f}".format(lit5))), border=1)
         pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(total5))), border=1)
         pdf.ln(th)
 
@@ -230,7 +230,7 @@ def tabla(fecha1, fecha2, p, p2, p3, p4, p5, lit1, lit2, lit3, lit4, lit5, total
     pdf.ln(th)
     pdf.cell(col_width, th, "Totales General:", border=1)
     pdf.cell(col_width,th," ", border=1)
-    pdf.cell(col_width,th,str(totalLitros), border=1)
+    pdf.cell(col_width,th,str(("{0:.2f}".format(totalLitros))), border=1)
     pdf.cell(col_width,th,"$ "+str(("{0:.2f}".format(totalGral))), border=1)
     pdf.ln(th)
 

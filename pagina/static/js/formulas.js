@@ -8,7 +8,7 @@ function ejemplo(valor){
   var valorTd=parseFloat(document.getElementById(valor).innerText); //Encuentro el valor de una celda de una tabla 
   var valor_input = parseFloat(document.getElementsByName(valor)[0].value); // Encuentro el valor de un input dentro de una tabla
   var row = document.getElementById(valor+'-2');
-  var x = row.insertCell(13);
+  var x = row.insertCell(16);
   if (valor != ""){
     if (valor_input>valorTd){
       alert("Existe una diferencia");
