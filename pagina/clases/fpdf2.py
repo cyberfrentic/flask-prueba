@@ -153,10 +153,14 @@ def imprimir(**datos):
     pdf.ln(25)
     pdf.cell(0, 10, 'A T E N T A M E N T E', 0, 0, 'C')
     pdf.ln(25)
-    pdf.cell(0, 10, 'C. JESUS MANUEL AGUILAR BE', 0, 0, 'C')
+    pdf.cell(0, 10, 'LIC. HENRY DAVID AMAYA BRICEÑO', 0, 0, 'C')
     pdf.ln(5)
-    pdf.cell(0, 10, 'G E R E N T E', 0, 0, 'C')
-    pdf.ln(20)
+    pdf.cell(0, 10, 'EN SUPLENCIA DEL C. JESUS MANUEL AGUILAR BE', 0, 0, 'C')
+    pdf.ln(5)
+    pdf.cell(0, 10, 'DESIGNADO MEDIANTE OFICIO CAPA/DG/CJ/DJ-0941BIS/2018', 0, 0, 'C')
+    pdf.ln(5)
+    pdf.cell(0, 10, 'CON FECHA 22-10-2018', 0, 0, 'C')
+    pdf.ln(10)
     pdf.set_font('Arial', size=8)
     pdf.cell(0, 10, 'C. C. P. ARCHIVO', 0, 0, 'L')
     pdf.ln(10)
@@ -165,7 +169,7 @@ def imprimir(**datos):
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'inline; filename=%s.pdf' % 'constancia'
     return response
-    
+
 
 def imprimir2(**datos):
     # Instantiation of inherited class
@@ -191,10 +195,14 @@ def imprimir2(**datos):
     pdf.ln(25)
     pdf.cell(0, 10, 'A T E N T A M E N T E', 0, 0, 'C')
     pdf.ln(25)
-    pdf.cell(0, 10, 'C. JESUS MANUEL AGUILAR BE', 0, 0, 'C')
+    pdf.cell(0, 10, 'LIC. HENRY DAVID AMAYA BRICEÑO', 0, 0, 'C')
     pdf.ln(5)
-    pdf.cell(0, 10, 'G E R E N T E', 0, 0, 'C')
-    pdf.ln(20)
+    pdf.cell(0, 10, 'EN SUPLENCIA DEL C. JESUS MANUEL AGUILAR BE', 0, 0, 'C')
+    pdf.ln(5)
+    pdf.cell(0, 10, 'DESIGNADO MEDIANTE OFICIO CAPA/DG/CJ/DJ-0941BIS/2018', 0, 0, 'C')
+    pdf.ln(5)
+    pdf.cell(0, 10, 'CON FECHA 22-10-2018', 0, 0, 'C')
+    pdf.ln(10)
     pdf.set_font('Arial', size=8)
     pdf.cell(0, 10, 'C. C. P. ARCHIVO', 0, 0, 'L')
     pdf.ln(10)

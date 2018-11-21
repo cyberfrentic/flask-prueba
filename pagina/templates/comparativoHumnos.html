@@ -9,7 +9,40 @@
 {%endblock%}
 
 {% block content %}
-<script src="{{ url_for('static', filename='js/formulas.js')}}"></script>
+<!--<script src="{{ url_for('static', filename='js/formulas.js')}}"></script>-->
+<script type="text/javascript">
+    function mathRound2 (num, decimales = 2) {
+  //Respuesta de Rubén modificada por mí para el caso general y números negativos
+  var exponente = Math.pow(10, decimales);
+  return (num >= 0 || -1) * Math.round(Math.abs(num) * exponente) / exponente;
+}
+
+function ejemplo(valor){
+  var valorTd=parseFloat(document.getElementById(valor).innerText); //Encuentro el valor de una celda de una tabla 
+  var valor_input = parseFloat(document.getElementsByName(valor)[0].value); // Encuentro el valor de un input dentro de una tabla
+  var row = document.getElementById(valor+'-2');
+  var x = row.insertCell(15);
+  if (valor != ""){
+    if (valor_input>valorTd){
+      alert("Existe una diferencia");
+      x.innerHTML = mathRound2(valor_input-valorTd);
+  }
+    else if (valor_input<valorTd){
+      alert("Existe una diferencia");
+      x.innerHTML = mathRound2(valorTd-valor_input);             
+    }
+  }
+}
+
+function imprSelec(muestra){
+    var ficha = document.getElementById(muestra); //obtenemos el objeto a imprimir
+    var ventimp = window.open(' ','popimpr'); //abrimos una ventana vacía nueva
+    ventimp.document.write(ficha.innerHTML); //imprimimos el HTML del objeto en la nueva ventana
+    ventimp.document.close();  //cerramos el documento
+    ventimp.print(); //imprimimos la ventana
+    ventimp.close(); //cerramos la ventana
+}
+</script>
 <h3 class="mt-5">Captura de comparativo ISSSTE e IMSS desde Excell</h3>
 <div class="row-fluid" >
     <div class="table-responsive" id="muestra">
@@ -17,7 +50,7 @@
     	   <caption><strong>Fecha del Comparativo <strong>IMSS</strong>  {{fecha}}</strong></caption>
     	   <tbody>
     	        <tr class="success">
-                    <td><strong>Clave</strong></td>
+                    <td><strong>No.</strong></td>
                     <td><strong>Nombre</strong></td>
                     <td><strong>IMSSCyVE</strong></td>
                     <td><strong>IMSSEyME</strong></td>
@@ -50,7 +83,7 @@
                         <td>{{ item['INFONAVITP'] }}</td>
                         <td>{{ item['DESC. INFONAVIT'] }}</td>
                         <td id="{{item['clave']}}">{{ item['total'] }}</td>
-                        <td><input type="text" class="input-small" name="{{item['clave']}}" onBlur="ejemplo('{{item['clave']}}')"tabindex="'{{item['clave']}}'"></td>
+                        <td><input type="text" class="input-small" name="{{item['clave']}}" onBlur="ejemplo('{{item['clave']}}')" tabindex="{{item['clave']}}"></td>
     	            </tr>
                 {% endfor %}
             </tbody>
