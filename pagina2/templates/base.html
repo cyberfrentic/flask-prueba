@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+	 <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}" />
+
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet"  href="{{ url_for('static', filename='css/bootstrap.min.css') }}" media="screen" >
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-responsive.css')}}" media="screen" >
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script> 
+  <script src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat.js')}}"></script> 
+<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat2.js')}}"></script> 
+<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat3.js')}}"></script> 
+<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat4.js')}}"></script> 
+<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat5.js')}}"></script> 
+
+	
+</head>
+
+<body background="{{ url_for('static', filename='img/capa.jpg') }}">
+  
+	<div class="navbar  navbar-inverse navbar-fixed-top" id="noprint">
+		<div class="navbar-inner">
+			<div class="container">
+				<a class="btn btn-navbar collapsed" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                  </a>
+				<a href="/home" class="brand">
+					<img src="{{ url_for('static', filename='img/logo.png') }}" width="150" height="30" alt="">
+				</a>
+				
+				<div class="nav-collapse navbar-responsive-collapse collapse" style="height: 0px;">
+					<ul class="nav">
+						<li><a href="/constancias">Constancias</a></li>
+						<!--Inicio Menu desplegable-->
+						<li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Rec. Materiales <b class="caret"></b></a>
+              <ul class="dropdown-menu" style="background-color: #030303!important;">
+                <li><a href="/servicios">Captura</a></li>
+                <li><a href="/folio">Fondo</a></li>
+                <li><a href="/ticket">Ticket Combustible</a></li>
+                <li class="divider"></li>
+                <li class="nav-header"><strong>Consultas</strong></li>
+                <li><a href="/fondoContable">Núm. Fondo Contable</a></li>
+                <li><a href="/ticketvsfactura">Fac. Comb. vs Ticket</a></li>
+                <li><a href="/consultaTicket">Total Ticket's</a></li>
+               <!-- <li><a href="#">One more separated link</a></li>-->
+              </ul>
+            </li>
+            <!-- Fin Menu desplegable-->
+
+            <!--Inicio Menu desplegable-->
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Rec. Humanos <b class="caret"></b></a>
+              <ul class="dropdown-menu" style="background-color: #030303!important;">
+                <li><a href="/servicios">Captura</a></li>
+                <li class="divider"></li>
+                <li class="nav-header"><strong>Consultas</strong></li>
+                <li><a href="#">Detalles</a></li>
+               <!-- <li><a href="#">One more separated link</a></li>-->
+              </ul>
+            </li>
+            <!-- Fin Menu desplegable-->
+            <li><a href="/contanto">Contacto</a></li>
+						<li><a href="/create">Crear Usuario</a></li>
+						<!--<li><a href="">hugo</a></li>-->
+                      
+					
+					</ul>
+					<ul class="nav pull-right">
+            {%block nombre%}  
+            {% if nombre %}
+						  <li><a href="#"><icon class="icon-user icon-white"></icon> {{nombre}}</a></li>
+            {% else %}
+              <li><a href="/login"><icon class="icon-user icon-white"></icon> Login</a></li> 
+            {% endif %}
+            {%endblock%}  
+						<li class="divider-vertical"></li>
+						<li><a href="/logout"><icon class="icon-off icon-white"></icon> Logout</a></li>
+					</ul>
+				</div>
+			</div>		
+		</div>
+	</div>
+  <br>
+  <br>
+  <br>
+  <br>
+	<div class="container">
+      <div class="row-fluid">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert alert-error">
+                  {{ message }}
+                </div>
+              {%endfor%}
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+    </center>
+
+    <!-- Page Content -->
+    <div class="container">
+      {% block contador%}
+  <SCRIPT type="text/javascript">
+
+/*
+Count Down - Annual Occasions Script
+Visit http://rainbow.arch.scriptmania.com/scripts/
+ for this script and many more
+*/
+
+var today=new Date()
+
+//Enter the occasion's MONTH (1-12) and DAY (1-31):
+var theoccasion=new Date(today.getFullYear(), 12, 7)
+
+//Customize text to show before and on occasion. Follow grammer below:
+var beforeOccasionText="Para el aguinaldo"
+var onOccasiontext="Hoy Pagan. <BR>Feliz Día del Aguinaldo"
+
+var monthtext=new Array("Jan","Feb","Mar","April","May","June","July","Aug","Sep","Oct","Nov","Dic")
+theoccasion.setMonth(theoccasion.getMonth()-1) //change to 0-11 month format
+var showdate="("+monthtext[theoccasion.getMonth()]+" "+theoccasion.getDate()+")" //show date of occasion
+
+var one_day=1000*60*60*24
+var calculatediff=""
+
+calculatediff=Math.ceil((theoccasion.getTime()-today.getTime())/(one_day))
+if (calculatediff<0){ //if bday already passed
+var nextyeartoday=new Date()
+nextyeartoday.setFullYear(today.getFullYear()+1)
+calculatediff=Math.ceil((nextyeartoday.getTime()-today.getTime())/(one_day)+calculatediff)
+}
+
+//Display message accordingly
+var pluraldayornot=(calculatediff==1)? "día" : "días"
+if (calculatediff>0)
+  document.write("<div class='col-md-3'><div style='position: fixed;'><B>"+calculatediff+" "+pluraldayornot+" "+beforeOccasionText+" "+showdate+"</B></div></div>")
+else if (calculatediff==0)
+  document.write("<B>"+onOccasiontext+" "+showdate+"</B>")
+
+</SCRIPT>
+
+  {%endblock%}
+        {% block login%}
+        {% endblock%}
+        {% block content %}
+
+      <h1 class="mt-5">Logo Nav by Start Bootstrap</h1>
+      <p>The logo in the navbar is now a default Bootstrap feature in Bootstrap 4! Make sure to set the width and height of the logo within the HTML. For best results, it's recommended that you use an SVG image as your logo.</p>
+        {% endblock %}
+    </div>
+    <!-- /.container -->
+	<br>
+    <br>
+    <br>
+    <footer class="footer grid-block" style="background-image: url({{ url_for('static', filename='img/bg-footer.png') }}); width: 100%; height: 10vh;  background-repeat: no-repeat; background-size: cover; position: fixed;
+  bottom: 0;">
+        <div>
+          <br>
+          <center><p style="color:white";>Departamento de Informática y telecomunicaciones Org. Oper. Felipe Carrillo Puerto</p></center>
+          
+        </div>
+    </footer>
+
+</body>
+</html>

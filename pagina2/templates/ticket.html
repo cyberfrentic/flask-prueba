@@ -1,0 +1,209 @@
+{% extends 'Base.html' %}
+	{%block nombre%}  
+	    {% if nombre %}
+	      <li><a href="#"><icon class="icon-user icon-white"></icon> {{nombre}}</a></li>
+	    {% else %}
+	        <li><a href="/login"><icon class="icon-user icon-white"></icon> Login</a></li> 
+	    {% endif %}
+	{%endblock%}
+	{% block content %}
+	 <script>
+	 	
+    	// Convierte en mayusculas los datos de un input
+    	function mayus(e) {
+    		e.value = e.value.toUpperCase();
+		}
+    	// Desactivar un input
+    	function DesactivarContrato() {
+    		document.getElementById("transaccion").disabled = document.getElementById("validacion").checked;
+		}
+		function valida(e){
+    		tecla = (document.all) ? e.keyCode : e.which;
+    		//Tecla de retroceso para borrar, siempre la permite
+    		if (tecla==8){
+        	return true;
+    	}
+
+    	
+    	// Patron de entrada, en este caso solo acepta numeros
+    	patron =/[0-9,'.'']/;
+    	tecla_final = String.fromCharCode(tecla);
+    	return patron.test(tecla_final);
+		}
+
+
+		// funcion para Cargar datos al campo <select>
+		function cargar_provincias(register) {
+ 			var array1 = ["TA-9625-G", "TA-9629-G", "SZ-9449-H", "SZ-1007-H", "TA-9638-G", "SZ-1008-H", "TA-9642-G", "SZ-1009-H"];
+ 			var array2 = ["TB-5720-G", "SZ-9439-H", "BIDON"];
+ 			var array3 = ["BIDON DIESEL", "BIDON GASOLINA", "UUF-101-E", "RLT3S", "RLT1S", "VCN9A"];
+
+ 			// Ordena el Array Alfabeticamente, es muy facil ;)):
+ 			array1.sort();
+ 			array2.sort();
+ 			array3.sort();
+ 			if (register == 'placa'){
+ 				addOptions("tipo", array1);
+ 			}
+ 			if (register == 'tarjeta1'){
+ 				addOptions("tipo", array2);
+ 			}
+ 			if (register == 'tarjeta2'){
+ 				addOptions("tipo", array3);
+ 			}
+ 			
+		}
+
+		//limpiar select
+		function removeOptions(domElement){
+    		var i;
+    		var selectbox = document.getElementsByName(domElement)[0];
+    		for(i = selectbox.options.length - 1 ; i >= 0 ; i--){
+        		selectbox.remove(i);
+    		}
+		}
+
+		// Rutina para agregar opciones a un <select>
+		function addOptions(domElement, array) {
+			removeOptions(domElement);
+ 			var select = document.getElementsByName(domElement)[0];
+ 			for (value in array) {
+  				var option = document.createElement("option");
+  				option.text = array[value];
+  				select.add(option);
+ 			}
+ 		}
+ 				
+ 		function Regform(){
+			var elementos = document.getElementsByName("placa");
+			var register;
+			for(var i=0; i<elementos.length; i++) {
+				if(elementos[i].checked){
+					register = elementos[i].value; 
+					break;
+				}
+			}
+			cargar_provincias(register);
+		}
+
+	</script>
+	<body>
+		<div class="container">
+			<div class="row-fluid">
+				<form  name="form1" class="form-horizontal" method="POST" accept-charset="utf-8">
+    				<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    				<legend>Caprura de Ticket´s de Combustible</legend>
+    				<div class="control-group info">
+    					<label class="control-label"><strong>Planchado?</strong></label>
+    					<div class="controls">
+    						<input type="checkbox" id="validacion" name="validar" onclick="DesactivarContrato()" value="activo" tabindex="1">
+    					</div>
+    				</div>
+    				<div class="control-group info">
+    					<label class="control-label" for="transaccion">Transacción:</label>
+    					<div class="controls">
+    						<input type="text" id="transaccion" name="transaccion"  placeholder="Capture El Número de contrato" onkeypress="return valida(event)" tabindex="2">
+    					</div>
+    				</div>
+    				<div class="control-group info">
+    					<label class="control-label" for="fecha1">Fecha:</label>
+    					<div class="controls">
+    						<input type="date" id="fecha" name="fecha" step="1" min="2018-01-01" max="2020-12-31" value="2018-01-01" tabindex="3" required> 
+    					</div>
+    				</div>
+    				<div class="control-group info">
+    					<label for="hora" class="control-label">Hora:</label>
+    					<div class="controls">
+    						<input type="time" id="appt-time" name="appt-time" min="7:00" max="18:00" tabindex="4" required >
+    						<span class="hours">Horario de suministro: 7AM a 6PM</span>
+    					</div>
+    				</div>
+    				<div class="control-group info">
+    					<label for="litros" class="control-label">Cantidad en Litros:</label>
+    					<div class="controls">
+    						<input type="text" id="litros" name="cantidad" placeholder="Cantidad de litros" onkeypress="return valida(event)" tabindex="5">
+    					</div>
+    				</div>
+    				<div class="control-group info">
+    					<label for="tipoComb" class="control-label">Tipo de Combustible</label>
+    					<div class="controls">
+    						<label class="radio inline">
+								<input type="radio" name="optionsRadios" id="optionsRadios1" value="Magna" checked>
+								Magna
+							</label>
+							<label class="radio inline">
+  								<input type="radio" name="optionsRadios" id="optionsRadios2" value="Premium">
+  								Premium
+							</label>
+							<label class="radio inline">
+  								<input type="radio" name="optionsRadios" id="optionsRadios3" value="Diesel">
+  								Diesel
+							</label>
+    					</div>
+    				</div>
+    				<div class="control-group info">
+    					<label for="precio" class="control-label">Precio:</label>
+						<div class="controls">
+    						<input type="text" class="text" id="precio" name="precio" placeholder="Capture El precio del combustible" onkeypress="return valida(event)" tabindex="6">
+						</div>    					
+    				</div>
+    				<div class="control-group info">
+    					<label for="precio" class="control-label">Subtotal:</label>
+						<div class="controls">
+    						<input type="text" class="text" id="subtotal" name="subtotal" placeholder="Capture el Subtotal del Ticket" onkeypress="return valida(event)" tabindex="7" required>
+					</div>
+					<br>
+					<div class="control-group info">
+    					<label for="precio" class="control-label">I.V.A.:</label>
+						<div class="controls">
+    						<input type="text" class="text" id="iva" name="iva" placeholder="Capture El I.V.A. del Ticket" onkeypress="return valida(event)" tabindex="8" required>
+						</div>
+					</div>
+					<div class="control-group info">
+    					<label for="precio" class="control-label">Total :</label>
+						<div class="controls">
+    						<input type="text" class="text" id="total" name="total" placeholder="Capture El Total del Ticket" onkeypress="return valida(event)" tabindex="9" required>
+						</div>
+					</div>
+					<div class="control-group info">
+    					<label for="tipoComb" class="control-label">placa o tarjeta</label>
+    					<div class="controls">
+    						<label class="radio inline">
+								<input type="radio" name="placa" value="placa" onclick="Regform();" checked> Placa
+							</label>
+							<label class="radio inline">
+  								<input type="radio" name="placa" value="tarjeta1" onclick="Regform();"> Tarjeta 1
+							</label>
+							<label class="radio inline">
+  								<input type="radio" name="placa" value="tarjeta2" onclick="Regform();"> Tarjeta 2
+							</label>
+    					</div>
+    				</div>
+    				<div class="control-group info">
+    					<div class="controls">
+    						<select name="tipo" >
+    							<option value="">alguna placa</option>
+    						</select>
+    					</div>
+    				</div>
+    				<div class="control-group info">
+    					<label for="textarea" class="control-label">Observaciones:</label>
+    					<div class="controls">
+    						<textarea name="comentarios" id="comentarios" cols="30" rows="5"></textarea> 
+    					</div>
+    				</div>
+    				<div class="control-group">
+    					<div class="controls">
+    						<div class="btn-group">
+    							<button type="submit" class="btn btn-info" id="generar" name="boton" value="generar">Guardar Ticket</button>
+    						</div>
+    						<div class="btn-group">
+    							<button type="reset" class="btn btn-info" name="reset" value="cancelar">cancelar</button>
+    						</div>
+    					</div>
+    				</div>
+    			</form>
+			</div>
+		</div>
+	</body>
+	{% endblock %}

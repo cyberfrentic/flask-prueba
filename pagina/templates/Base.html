@@ -1,22 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-	 <link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}" />
-
+	<link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}" />
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-  <link rel="stylesheet"  href="{{ url_for('static', filename='css/bootstrap.min.css') }}" media="screen" >
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-responsive.css')}}" media="screen" >
+  <link rel="stylesheet"  href="{{ url_for('static', filename='css/bootstrap.min.css') }}" >
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-responsive.css')}}">
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
   <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.js')}}"></script> 
   <script src="{{ url_for('static', filename='js/bootstrap.js')}}"></script>
-<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
-<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat.js')}}"></script> 
-<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat2.js')}}"></script> 
-<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat3.js')}}"></script> 
-<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat4.js')}}"></script> 
-<script type="text/javascript" async src="{{ url_for('static', filename='js/jsbat5.js')}}"></script> 
-
-	
+  <script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
 </head>
 
 <body background="{{ url_for('static', filename='img/capa.jpg') }}">
@@ -108,6 +100,7 @@
     <!-- Page Content -->
     <div class="container">
       {% block contador%}
+	  <!--
   <SCRIPT type="text/javascript">
 
 /*
@@ -119,11 +112,11 @@ Visit http://rainbow.arch.scriptmania.com/scripts/
 var today=new Date()
 
 //Enter the occasion's MONTH (1-12) and DAY (1-31):
-var theoccasion=new Date(today.getFullYear(), 12, 7)
+var theoccasion=new Date(today.getFullYear(), 12, 6)
 
 //Customize text to show before and on occasion. Follow grammer below:
 var beforeOccasionText="Para el aguinaldo"
-var onOccasiontext="Hoy Pagan. <BR>Feliz Día del Aguinaldo"
+var onOccasiontext="Hoy Pagan. YUUUUPPPPIIIII!!!!! <BR>Feliz Dia del Aguinaldo"
 
 var monthtext=new Array("Jan","Feb","Mar","April","May","June","July","Aug","Sep","Oct","Nov","Dic")
 theoccasion.setMonth(theoccasion.getMonth()-1) //change to 0-11 month format
@@ -147,7 +140,7 @@ else if (calculatediff==0)
   document.write("<B>"+onOccasiontext+" "+showdate+"</B>")
 
 </SCRIPT>
-
+-->
   {%endblock%}
         {% block login%}
         {% endblock%}
@@ -166,7 +159,7 @@ else if (calculatediff==0)
         <div>
           <br>
           <center><p style="color:white";>Departamento de Informática y telecomunicaciones Org. Oper. Felipe Carrillo Puerto</p></center>
-          
+          <div style="text-align: center;"><a style= "@media screen and (max-width: 980px) display: none; right: 3px; height: 167px; width: 100px; position: fixed; bottom: -5px;"><!--<img src="{{ url_for('static', filename='img/ezgif_com_optimize.gif')}}" _fcksavedurl="" alt="" />--></a></div>
         </div>
     </footer>
 

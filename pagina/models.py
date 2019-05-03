@@ -6,6 +6,7 @@ import datetime
 
 db = SQLAlchemy()
 
+
 class User(db.Model):
 	__tablename__= 'users'
 	id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +26,11 @@ class User(db.Model):
 	def verify_password(self, password):
 		return check_password_hash(self.password, password)
 
+class setupdb(db.Model):
+	__tablename__ = "Setup"
+	id = db.Column(db.Integer, primary_key=True)
+	Fol_contador = db.Column(db.Integer)
+
 class Compras(db.Model):
 	__tablename__='compras'
 	id = db.Column(db.Integer, primary_key=True)
@@ -38,6 +44,8 @@ class Compras(db.Model):
 	placas = db.Column(db.String(8))
 	observaciones = db.Column(db.Text)
 	folio = db.Column(db.Integer)
+	year = db.Column(db.String(4))
+	Fol_contador = db.Column(db.Integer)
 
 
 class Articulos(db.Model):
@@ -50,11 +58,13 @@ class Articulos(db.Model):
 	p_u = db.Column(db.Float)
 	importe = db.Column(db.Float)
 
+
 class Padron(db.Model):
 	__tablename__='padron'
 	cuenta = db.Column(db.Integer, primary_key=True, unique=True, index=True)
 	nombre = db.Column(db.String(120))
 	direccion = db.Column(db.String(150))
+
 
 class Combustible(db.Model):
 	__tablename__='combustible'
@@ -79,6 +89,7 @@ class Combustible(db.Model):
 	pKm = 			db.Column(db.Float)
 	conductor = 	db.Column(db.String(10))
 
+
 class Ticket(db.Model):
 	__tablename__='ticket'
 	id = db.Column(db.Integer, primary_key=True)
@@ -93,38 +104,3 @@ class Ticket(db.Model):
 	medio = db.Column(db.String(8))
 	placa = db.Column(db.String(9))
 	observaciones = db.Column(db.Text)
-
-class InformativoImss(db.Model):
-	__tablename__='informativoimss'
-	id = db.Column(db.Integer, primary_key=True)
-	clave = db.Column(db.String(9))
-	nombre = db.Column(db.String(34))
-	mes = db.Column(db.Integer)
-	anio = db.Column(db.Integer)
-	imssEyME = db.Column(db.Float)
-	imssIyVE = db.Column(db.Float)
-	imssEyMP = db.Column(db.Float)
-	imssIyVP =  db.Column(db.Float)
-	imssCyVP = db.Column(db.Float)
-	imssRTP  = db.Column(db.Float)
-	imssGuaP = db.Column(db.Float)
-	imssRetP = db.Column(db.Float)
-
-class InfomativoIssste(db.Model):
-	__tablename__='informativoissste'
-	id = db.Column(db.Integer, primary_key=True)
-	clave = db.Column(db.String(9))
-	nombre = db.Column(db.String(34))
-	mes = db.Column(db.Integer)
-	anio = db.Column(db.Integer)
-	retirIssste = db.Column(db.Float)
-	fovissste = db.Column(db.Float)
-	salBaseIsteEm = db.Column(db.Float)
-	salBaseIstPa = db.Column(db.Float)
-	isteSegSaludP = db.Column(db.Float)
-	isteRtPat = db.Column(db.Float)
-	isteIyVPat = db.Column(db.Float)
-	isteServSocP = db.Column(db.Float)
-	isteCyVPat = db.Column(db.Float)
-	ajusteIstePat = db.Column(db.Float)
-	exePrevSoc = db.Column(db.Float)

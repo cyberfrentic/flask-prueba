@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, send_file
 from forms import Create_Form, LoginForm, Factura
-from flask_wtf import CsrfProtect
+from flask_wtf import CSRFProtect
 from config import DevelopmentConfig
-from models import db, User, Compras, Padron, Combustible, Ticket, Articulos, InfomativoIssste, InformativoImss
+from models import db, User, Compras, Padron, Combustible, Ticket, Articulos, setupdb
 from werkzeug.utils import secure_filename
 from xml.dom import minidom
 import collections as co
@@ -29,7 +29,7 @@ def exceldate(serial):
 ###########################################
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
-crsf = CsrfProtect()
+crsf = CSRFProtect()
 
 @app.before_request
 def before_request():
@@ -400,7 +400,7 @@ def folio():
 		global folio
 		if 'form1' in request.form['btn1']:
 			folio = request.form['folio']
-			query1=Compras.query.filter_by(id=folio).first()
+			query1=Compras.query.filter_by(Fol_contador=folio).filter_by(year=str(datetime.datetime.now().year)).first()
 			if query1 != None:
 				lista=(query1.fecha, str(query1.total), str(query1.subtotal), str(query1.iva), query1.rfc, query1.nombre, query1.UUiD)
 				return render_template('folio.html', lista=lista, nombre=nombre)
@@ -408,7 +408,7 @@ def folio():
 				flash("El Folio no existe")
 		elif 'form2' in request.form['btn1']:
 			numero_folio = request.form['numero']
-			compras = Compras.query.filter_by(id = folio).first()
+			compras = Compras.query.filter_by(Fol_contador=folio).filter_by(year=str(datetime.datetime.now().year)).first()
 			if compras.folio == None:
 				compras.folio=numero_folio
 				db.session.commit()
@@ -593,6 +593,7 @@ def get_fileXml(filename):
 		flash('El registro Existe en la base de datos')
 		return render_template("leer.html")	
 	factura = Factura(request.form)
+	fol = setupdb.query.filter_by(id=1).one()
 	compras=Compras(
 			UUiD = atributos['UUiD'],
 			rfc = atributos['rfc'],
@@ -602,9 +603,13 @@ def get_fileXml(filename):
 			total = atributos['total'],
 			fecha = atributos['fecha'],
 			placas = factura.placas.data,
-			observaciones = factura.observaciones.data
+			observaciones = factura.observaciones.data,
+			year = datetime.datetime.now().year,
+			Fol_contador = fol.Fol_contador+1,
 			)
+	db.session.commit()
 	if (request.method == 'POST') and (factura.validate()):
+		fol.Fol_contador=fol.Fol_contador+1
 		db.session.add(compras)
 		db.session.commit()
 		id_compra = Compras.query.filter_by(UUiD = atributos['UUiD']).first()
@@ -618,7 +623,7 @@ def get_fileXml(filename):
 				)
 			db.session.add(arti)
 			db.session.commit()
-		flash('Registro agregado y tiene el Folio: {}'.format(id_compra.id))
+		flash('Registro agregado y tiene el Folio: {}'.format(fol.Fol_contador))
 	lista1.append(atributos)
 	nombre = (session['username']).upper()
 	return render_template("ListaXML.HTML", lista=lista1, lista2=sample, form=factura, nombre=nombre)

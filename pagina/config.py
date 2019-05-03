@@ -4,6 +4,6 @@ class Config(object):
 
 class DevelopmentConfig(Config):
 	DEBUG = True
-	SQLALCHEMY_DATABASE_URI = 'mysql://pascual:lh260182lh@192.168.15.211/flask'
+	SQLALCHEMY_DATABASE_URI = 'mysql://administrador:ha260182ha@192.168.15.45/flask'
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 	UPLOAD_FOLDER = os.path.abspath("static/uploads/")
